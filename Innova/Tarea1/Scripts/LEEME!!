@@ -1,0 +1,41 @@
+GUSTAVO:
+
+Listo +) Revisar el trigger 2, que tiene que ver con los servicios únicos. En la
+manera que está implementada permite que puedas consumir el mismo servicio
+único varias veces siempre y cuando sea "de a uno". -> Tomar en cuenta los
+consumos ya hechos en ese trigger.
+
+Listo -) Eliminé el trigger 3, para implementar el otro trigger que va a incluir el
+paquete que tiene ese código automáticamente
+
+Listo +) Implementar un trigger que actualice el saldo cuando se haga un consumo por
+fuera de lo que incluye el plan prepago
+
+
+REBECA:
+
+LISTO +) Arreglar el diagrama/informe para incluir la renta básica en un
+plan_prepago.
+
+LISTO +) Arreglar el trigger 4, que no permite agregar un consumo si no se tiene
+saldo positivo.
+
+LISTO +) Trigger que no permita añadir/modificar/eliminar en plan prepago y
+postpago
+
+LISTO +) Trigger que agregue automaticamente los planes a prepago y postpago
+cuando
+se insertan en plan
+
+
+QUIEN TENGA TIEMPO:
+
++) Trigger que verifique: Un producto no puede consumir un servicio que no esté
+incluido en el plan al que está
+afiliado o en algún paquete que haya contratado
+
+LISTO +) Tarifa no puede ser null cuando es prepago el plan
+
++) MAXIMO UN PLAN!!!!
+
+
