@@ -516,3 +516,40 @@ EXECUTE PROCEDURE existePlan();
 CREATE TRIGGER existePlan2
 BEFORE INSERT OR UPDATE ON AFILIA FOR EACH ROW 
 EXECUTE PROCEDURE existePlan();
+
+--
+-- Procedimientos para manejar las consultas de la tarea 2
+-- 
+
+CREATE OR REPLACE FUNCTION consulta3()
+RETURNS INTEGER AS $$
+DECLARE
+	serialProducto PRODUCTO.numserie%TYPE;
+	consumo CONSUME%ROWTYPE;
+	codigoPlan INTEGER;
+	fechaConsumo DATE;
+	costoServ REAL;
+	sum INTEGER;
+  BEGIN
+  	sum := 0;
+	FOR serialProducto IN SELECT numserie FROM PRODUCTO
+	LOOP
+		IF EXISTS (SELECT * FROM AFILIA WHERE numserie = serialProducto) THEN
+			codigoPlan = (SELECT codPlan FROM AFILIA WHERE numserie = serialProducto);
+			FOR consumo IN SELECT * FROM CONSUME WHERE numserie = serialProducto 
+			LOOP
+				IF to_number(to_char(consumo.fecha,'MM')) = to_number(to_char(CURRENT_DATE,'MM'))
+				AND to_number(to_char(consumo.fecha,'YYYY')) = to_number(to_char(CURRENT_DATE,'YYYY'))
+				AND EXISTS (SELECT cantidad FROM INCLUYE WHERE codserv = consumo.codserv
+				AND codplan = codigoPlan) THEN
+					costoServ := (SELECT tarifa FROM INCLUYE WHERE codserv = consumo.codserv
+					AND codplan = codigoPlan);
+					-- incluido = (SELECT cantidad FROM INCLUYE WHERE codserv = consumo.codserv);
+					sum := sum + consumo.cantidad*costoServ;
+				END IF; 
+			END LOOP;
+		END IF; 
+	END LOOP;
+	RETURN sum;
+  END;
+$$ LANGUAGE plpgsql;

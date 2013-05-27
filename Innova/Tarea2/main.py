@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import psycopg2
+import psycopg2.extras
 import database
 
 # Método que implementa la primera consulta:
@@ -8,20 +9,29 @@ import database
 
 def main():
   # Consulta 1
-  b = database.consulta("""La lista de productos a que está suscrito cada cliente y el
+  a = database.consulta("""La lista de productos a que está suscrito cada cliente y el
   plan a que se ha afiliado para ese producto""",
   """select nombrecl,numserie,codplan from 
   (cliente natural join producto) natural join activa;""",
-  "ingsoftware","gustavo")
+  "ingenieria","gustavo","gustavo1994")
   
-  result = b.execute()
+  result = a.execute()
   
-  b.comando = """select nombrecl,numserie,codplan from 
+  a.comando = """select nombrecl,numserie,codplan from 
   (cliente natural join producto) natural join afilia;"""
   
-  result = result + b.execute()
-  print str(result)
+  result = result + a.execute()
+  print(str(result));
   
+  # Consulta 3
+  
+  c = database.consulta("""Lo que se adeuda a la empresa por concepto de servicios 
+  consumidos pero no pagados aún por estar amparados por un plan postpago.""",
+  """select * from consulta3()""",
+  "ingenieria","gustavo","gustavo1994")
+  
+  result = c.execute()
+  print(str(result));
   
   
 if __name__ == '__main__':
