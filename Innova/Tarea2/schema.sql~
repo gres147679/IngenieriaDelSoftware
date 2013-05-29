@@ -570,6 +570,7 @@ DECLARE
 BEGIN
   
   sum := 0;
+  cantidadConsumida := 0;
   
   FOR serialProducto IN SELECT numserie FROM PRODUCTO
   LOOP
@@ -583,7 +584,6 @@ BEGIN
       FOR codigoServicio IN SELECT codserv FROM INCLUYE WHERE codplan = codigoPlan
       LOOP
         
-        cantidadConsumida := 0;
         servicioIncluido := (SELECT cantidad FROM INCLUYE WHERE codplan = codigoPlan AND codserv = codigoServicio);
         tarifaIncluida := (SELECT tarifa FROM INCLUYE WHERE codplan = codigoPlan AND codserv = codigoServicio);
         
