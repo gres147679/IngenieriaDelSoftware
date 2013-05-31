@@ -49,6 +49,9 @@ class consulta(database):
     
     def execute(self):
         self.cursor.execute(self.comando)    
-        return self.cursor.fetchall()
+        try:
+            return self.cursor.fetchall()
+        except psycopg2.ProgrammingError:
+            return [] 
 
     
