@@ -4,22 +4,15 @@ import psycopg2
 import psycopg2.extras
 import database
 
-# Método que implementa la primera consulta:
-# La lista de productos a que está suscrito cada cliente y el plan a que se
-# ha afiliado para ese producto
-
 # Consulta 1
 def consulta1():
   
-<<<<<<< HEAD
   # Consulta 1
   print("\n-----CONSULTA 1----")
   print("""La lista de productos a que está suscrito cada cliente y el 
 plan a que se ha afiliado para ese producto.
 -------------------""")
-=======
-  print("\n-----CONSULTA 1----\n")
->>>>>>> 8b2b7034d12433726eebc45f6f143dab66eed56d
+
   a = database.consulta("""La lista de productos a que está suscrito cada cliente y el
   plan a que se ha afiliado para ese producto""",
   """select nombrecl,numserie,nombreprod,codplan,nombreplan from 
@@ -34,19 +27,17 @@ plan a que se ha afiliado para ese producto.
   result = result + a.execute()
   return(str(result));
 
-  
-  
-<<<<<<< HEAD
+
   # Consulta 2
   print("\n\n-----CONSULTA 2----")
   print("""La lista de clientes que se encuentran afiliados 
 a cada plan.
 -------------------""")
-=======
+
 # Consulta 2
 def consulta2():
   print("\n\n-----CONSULTA 2----\n")
->>>>>>> 8b2b7034d12433726eebc45f6f143dab66eed56d
+
   b = database.consulta("""La lista de clientes que se encuentran afiliados 
   a cada plan.""",
   """select codplan,nombreplan,cedula,nombrecl from 
@@ -62,18 +53,18 @@ def consulta2():
   return(str(result));
   
   
-<<<<<<< HEAD
+
   
   # Consulta 3
   print("\n\n-----CONSULTA 3----")
   print("""Lo que se adeuda a la empresa por concepto de servicios 
 consumidos pero no pagados aún por estar amparados por un plan postpago.
 -------------------""")
-=======
+
 # Consulta 3
 def consulta3():  
   print("\n\n-----CONSULTA 3----\n")
->>>>>>> 8b2b7034d12433726eebc45f6f143dab66eed56d
+
   c = database.consulta("""Lo que se adeuda a la empresa por concepto de servicios 
   consumidos pero no pagados aún por estar amparados por un plan postpago.""",
   """select * from consulta3()""",
@@ -84,17 +75,17 @@ def consulta3():
   
   
   
-<<<<<<< HEAD
+
   # Consulta 4
   print("\n\n-----CONSULTA 4----")
   print("""Lo adelantado por concepto de prepago que 
 corresponde a servicios aún sin consumir.
 -------------------""")
-=======
+
 # Consulta 4
 def consulta4():
   print("\n\n-----CONSULTA 4----\n")
->>>>>>> 8b2b7034d12433726eebc45f6f143dab66eed56d
+
   d = database.consulta("""Lo adelantado por concepto de prepago que 
   corresponde a servicios aún sin consumir.""",
   """select * from consulta4()""",
