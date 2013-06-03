@@ -8,7 +8,7 @@ insert into CLIENTE values
 (22714709,'Gustavo El Khoury','Urb. Monte Elena Qta. Santa Teresa');
 
 insert into CLIENTE values
-(20978913,'Rebeca Machado','San Antonio, Los Teques');
+(20978913,'Rebeca Machado','San Antonio');
 
 insert into CLIENTE values
 (21205002,'Paul Baptista','Urb. Monte Monte Elena Qta. La Niebla');
@@ -77,6 +77,12 @@ insert into PRODUCTO values
 
 insert into PRODUCTO values
 ('A004','Decodificador','12345678',22714709);
+
+insert into PRODUCTO values
+('A005','Decodificador','12345678',20978913);
+
+insert into PRODUCTO values
+('A006','Decodificador','12345678',21205002);
 
 
 -- Sección de servicios 

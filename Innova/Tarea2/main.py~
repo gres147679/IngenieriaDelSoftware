@@ -14,7 +14,7 @@ def main():
   print("\n-----CONSULTA 1----")
   print("""La lista de productos a que está suscrito cada cliente y el 
 plan a que se ha afiliado para ese producto.
--------------------""")
+----------------""")
   a = database.consulta("""La lista de productos a que está suscrito cada cliente y el
   plan a que se ha afiliado para ese producto""",
   """select nombrecl,numserie,nombreprod,codplan,nombreplan from 
@@ -35,7 +35,7 @@ plan a que se ha afiliado para ese producto.
   print("\n\n-----CONSULTA 2----")
   print("""La lista de clientes que se encuentran afiliados 
 a cada plan.
--------------------""")
+----------------""")
   b = database.consulta("""La lista de clientes que se encuentran afiliados 
   a cada plan.""",
   """select codplan,nombreplan,cedula,nombrecl from 
@@ -56,7 +56,7 @@ a cada plan.
   print("\n\n-----CONSULTA 3----")
   print("""Lo que se adeuda a la empresa por concepto de servicios 
 consumidos pero no pagados aún por estar amparados por un plan postpago.
--------------------""")
+----------------""")
   c = database.consulta("""Lo que se adeuda a la empresa por concepto de servicios 
   consumidos pero no pagados aún por estar amparados por un plan postpago.""",
   """select * from consulta3()""",
@@ -71,7 +71,7 @@ consumidos pero no pagados aún por estar amparados por un plan postpago.
   print("\n\n-----CONSULTA 4----")
   print("""Lo adelantado por concepto de prepago que 
 corresponde a servicios aún sin consumir.
--------------------""")
+----------------""")
   d = database.consulta("""Lo adelantado por concepto de prepago que 
   corresponde a servicios aún sin consumir.""",
   """select * from consulta4()""",
