@@ -31,6 +31,7 @@ CREATE TABLE PLAN (
   renta_ilimitada real          NOT NULL,
   tipo          planmode        NOT NULL
   CONSTRAINT rentaPostpagoPositiva CHECK (renta_basica > 0)
+  CONSTRAINT rentaIlimitadaPostpagoPositiva CHECK (renta_ilimitada > 0)
 );
 
 CREATE TABLE PLAN_POSTPAGO (
