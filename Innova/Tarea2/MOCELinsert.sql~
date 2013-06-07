@@ -173,3 +173,11 @@ insert into CONTRATA values
 
 insert into AFILIA values
 ('AZ622342',3002,'paquete');
+
+
+
+
+-- Dudas
+-- Tarifa individual de los servicios?
+-- Segundos a cualquier operadora?
+-- 

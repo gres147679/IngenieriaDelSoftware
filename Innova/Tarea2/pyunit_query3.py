@@ -1,23 +1,16 @@
+#!/usr/local/bin/python
 # -*- coding: utf-8 -*-
-'''
-Este mecanismo de pruebas está diseñado para correr en una base 
-de datos aislada, que no contenga información valiosa, y que vaya 
-a ser destinada únicamente para pruebas
 
-@author: gustavo
-'''
 import unittest
 import psycopg2
 import database
 
-
 class query3Test(unittest.TestCase):
-    
 
     def setUp(self):
         self.myConsult = database.consulta(
         "Inserts de prueba para consulta 3",
-        None,"ingenieria","test","123")
+        None,"software","becca","12345")
 
     def tearDown(self):
         self.myConsult.setComando("""
@@ -167,9 +160,10 @@ class query3Test(unittest.TestCase):
         
         result = self.myConsult.execute()
         theoreticResult = 10
-        self.assertEqual(result[0][0],theoreticResult,"Error en la prueba 3");
+        self.assertEqual(result[0][0],theoreticResult,"Error en la prueba 4");
         print("Prueba 4 lista")
 
+        
     ## Caso en el que un cliente consume un servicio estando afiliado a un plan
     ## que lo contenga, y este consumo no es cubierto enteramente por el plan,
     ## sino que parte de el es cubierto y otra parte se excede
@@ -205,12 +199,10 @@ class query3Test(unittest.TestCase):
         
         select * from consulta3();""")
         
-        
-        
         result = self.myConsult.execute()
         theoreticResult = 5
         print result[0][0]
-        self.assertEqual(result[0][0],theoreticResult,"Error en la prueba 3");
+        self.assertEqual(result[0][0],theoreticResult,"Error en la prueba 5");
         
         print("Prueba 5 lista")
         

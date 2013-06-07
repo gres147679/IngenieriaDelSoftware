@@ -49,21 +49,6 @@ insert into CLIENTE values
 insert into CLIENTE values
 (21205014,'Andrea Medina','Quinta Crespo');
 
-insert into CLIENTE values
-(21205015,'Karla Vera','Chacao');
-
-insert into CLIENTE values
-(21205016,'Victoria Guerra','Cua');
-
-insert into CLIENTE values
-(21205017,'Andres Benitez','Catia');
-
-insert into CLIENTE values
-(21205018,'Maickel Suarez','Las Minas de Baruta');
-
-insert into CLIENTE values
-(21205019,'Pedro Lengster','La Lagunita');
-
 
 -- Sección de los 
 insert into PRODUCTO values
@@ -73,13 +58,46 @@ insert into PRODUCTO values
 ('A002','Decodificador','12345678',22714709);
 
 insert into PRODUCTO values
-('A003','Decodificador','12345678',22714709);
+('A003','Decodificador','12345678',20978913);
 
 insert into PRODUCTO values
-('A004','Decodificador','12345678',22714709);
+('A004','Decodificador','12345678',21205002);
 
 insert into PRODUCTO values
-('A005','Decodificador','12345678',20978913);
+('A005','Decodificador','12345678',21205003);
+
+insert into PRODUCTO values
+('A006','Decodificador','12345678',21205004);
+
+insert into PRODUCTO values
+('A007','Decodificador','12345678',21205005);
+
+insert into PRODUCTO values
+('A008','Decodificador','12345678',21205006);
+
+insert into PRODUCTO values
+('A009','Decodificador','12345678',21205007);
+
+insert into PRODUCTO values
+('A010','Decodificador','12345678',21205008);
+
+insert into PRODUCTO values
+('A011','Decodificador','12345678',21205009);
+
+insert into PRODUCTO values
+('A012','Decodificador','12345678',21205010);
+
+insert into PRODUCTO values
+('A013','Decodificador','12345678',21205011);
+
+insert into PRODUCTO values
+('A014','Decodificador','12345678',21205012);
+
+insert into PRODUCTO values
+('A015','Decodificador','12345678',21205013);
+
+insert into PRODUCTO values
+('A016','Decodificador','12345678',21205014);
 
 
 -- Sección de servicios 
@@ -104,7 +122,7 @@ insert into SERVICIO values
 insert into SERVICIO values 
 (1007,'Canal de Radio',0,FALSE);
 
-insert into SERVICIO values 
+insert into SERVICIO values -- (Este paquete no tiene suscriptores)
 (1008,'TVBrasil',42,TRUE);
 
 insert into SERVICIO values 
@@ -115,6 +133,7 @@ insert into SERVICIO values
 
 insert into SERVICIO values 
 (1011,'Película PPV',12,FALSE);
+
 
 -- Sección de planes
 insert into plan values
@@ -224,19 +243,58 @@ insert into incluye values
 (3004,1007,NULL,37);
 
 
-
 -- Afiliaciones
-insert into ACTIVA values
+insert into ACTIVA values -- Mismo cliente distinto planes
 ('A001',3001,0);
 
 insert into AFILIA values
 ('A002',3002,'paquete');
 
+
 insert into AFILIA values
-('A003',3004,'paquete');
+('A003',3002,'paquete');
+
+insert into ACTIVA values
+('A004',3001,15);
+
+insert into AFILIA values
+('A005',3004,'paquete');
+
+insert into AFILIA values
+('A006',3002,'paquete');
+
+insert into AFILIA values
+('A007',3004,'paquete');
+
+insert into ACTIVA values
+('A008',3001,0);
+
+insert into AFILIA values
+('A009',3002,'paquete');
+
+insert into ACTIVA values
+('A010',3003,40);
+
+insert into ACTIVA values
+('A011',3003,45);
+
+insert into AFILIA values
+('A012',3004,'paquete');
+
+insert into AFILIA values
+('A013',3002,'paquete');
+
+insert into AFILIA values
+('A014',3002,'paquete');
+
+insert into ACTIVA values
+('A015',3001,3);
+
+insert into AFILIA values
+('A016',3004,'paquete');
 
 insert into CONTRATA values
-('A004',1008);
+('A003','1009');
 
-insert into CONSUME values
-('A001',1001,CURRENT_DATE,5);
+insert into CONTRATA values
+('A003','1010');
