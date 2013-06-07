@@ -4,6 +4,11 @@ import psycopg2
 import psycopg2.extras
 import database
 
+# Variables globales para los datos de la base de datos
+dbname = "ingenieria"
+dbuser = "gustavo"
+dbpass = "12345" 
+
 # Consulta 1
 def consulta1():
   
@@ -16,15 +21,22 @@ plan a que se ha afiliado para ese producto.
   plan a que se ha afiliado para ese producto""",
   """select nombrecl,numserie,nombreprod,codplan,nombreplan from 
   (cliente natural join producto) natural join activa natural join plan;""",
-  "software","becca","12345")
+  dbname,dbuser,dbpass)
   
   result = a.execute()
+  string = str(['Nombre del cliente','Numero de serie del producto,','Nombre del producto',
+            'Codigo del Plan','Nombre del plan']) + '\n'
+  for i in result:
+      string = string + str(i) + '\n'
+       
   
   a.comando = """select nombrecl,numserie,nombreprod,codplan,nombreplan from 
   (cliente natural join producto) natural join afilia natural join plan;"""
   
   result = result + a.execute()
-  return(str(result));
+  for i in result:
+      string = string + str(i) + '\n'
+  return(string);
 
 
 
@@ -40,15 +52,22 @@ a cada plan.
   a cada plan.""",
   """select codplan,nombreplan,cedula,nombrecl from 
   (cliente natural join producto) natural join activa natural join plan;""",
-  "software","becca","12345")
+  dbname,dbuser,dbpass)
   
   result = b.execute()
+  
+  string = str(['Codigo del Plan','Nombre del plan','Cedula del cliente','Nombre del cliente']) + '\n'
+  for i in result:
+      string = string + str(i) + '\n'
   
   b.comando = """select codplan,nombreplan,cedula,nombrecl from 
   (cliente natural join producto) natural join afilia natural join plan;"""
   
   result = result + b.execute()
-  return(str(result));
+  for i in result:
+      string = string + str(i) + '\n'
+  
+  return(string);
   
 
   
@@ -62,8 +81,8 @@ consumidos pero no pagados aún por estar amparados por un plan postpago.
 
   c = database.consulta("""Lo que se adeuda a la empresa por concepto de servicios 
   consumidos pero no pagados aún por estar amparados por un plan postpago.""",
-  """select * from consulta3()""",
-  "software","becca","12345")
+  """select * from consulta3();""",
+  dbname,dbuser,dbpass)
   
   result = c.execute()
   return(str(result));
@@ -81,7 +100,18 @@ corresponde a servicios aún sin consumir.
   d = database.consulta("""Lo adelantado por concepto de prepago que 
   corresponde a servicios aún sin consumir.""",
   """select * from consulta4()""",
-  "software","becca","12345")
+  dbname,dbuser,dbpass)
   
   result = d.execute()
   return(str(result));
+  
+def main():
+    print "Resultado de la consulta 1: \n" + consulta1()
+    print "Resultado de la consulta 2: \n" + consulta2()
+    print "Resultado de la consulta 3: \n" + consulta3()
+    print "Resultado de la consulta 4: \n" + consulta4()
+    
+if __name__ == '__main__':
+    main()
+    
+    

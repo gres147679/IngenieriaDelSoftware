@@ -47,6 +47,9 @@ class consulta(database):
     def setComando(self,com):
         self.comando = com
     
+    def getColumnNames(self):
+        return str([desc[0] for desc in self.cursor.description])
+    
     def execute(self):
         self.cursor.execute(self.comando)    
         try:

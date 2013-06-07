@@ -10,7 +10,7 @@ class query3Test(unittest.TestCase):
     def setUp(self):
         self.myConsult = database.consulta(
         "Inserts de prueba para consulta 3",
-        None,"software","becca","12345")
+        None,"ingenieria","gustavo","12345")
 
     def tearDown(self):
         self.myConsult.setComando("""
@@ -194,14 +194,13 @@ class query3Test(unittest.TestCase):
         ('CBZ27326',3002,'paquete');
         
         insert into CONSUME values(
-        'CBZ27326',1001,current_date,100);
+        'CBZ27326',1001,current_date,150);
         
         
         select * from consulta3();""")
         
         result = self.myConsult.execute()
-        theoreticResult = 5
-        print result[0][0]
+        theoreticResult = 10
         self.assertEqual(result[0][0],theoreticResult,"Error en la prueba 5");
         
         print("Prueba 5 lista")
