@@ -6,11 +6,16 @@ import psycopg2
 import database
 
 class query3Test(unittest.TestCase):
-
+    # Parametros de conexion de la base de datos
+    dbname = "ingenieria"
+    dbuser = "gustavo"
+    dbpass = "12345"
+    
+    
     def setUp(self):
         self.myConsult = database.consulta(
         "Inserts de prueba para consulta 3",
-        None,"ingenieria","gustavo","12345")
+        None,self.dbname,self.dbuser,self.dbpass)
 
     def tearDown(self):
         self.myConsult.setComando("""
