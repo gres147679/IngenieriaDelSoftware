@@ -130,19 +130,19 @@ insert into incluye values
 
 -- Servicios incluidos para el plan Mixto Plus
 insert into incluye values
-(3001,1001,0.01150,39000);
+(3002,1001,0.01150,39000);
 
 insert into incluye values
-(3001,1002,0.01250,2600);
+(3002,1002,0.01250,2600);
 
 insert into incluye values
-(3001,1003,0.01150,5000);
+(3002,1003,0.01150,5000);
 
 insert into incluye values
-(3001,1004,0.35,200);
+(3002,1004,0.35,200);
 
 insert into incluye values
-(3001,1005,13.5,1);
+(3002,1005,13.5,1);
 
 -- Sección de servicios para paquetes
 
