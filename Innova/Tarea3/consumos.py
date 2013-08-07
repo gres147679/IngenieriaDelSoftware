@@ -4,7 +4,7 @@
 # Para este módulo se han implementado dos clases:
 # -La clase consumo: Describe un consumo que será agregado a la base de datos
 #
-# -La clase consulta: Describe un pedido de lista de consumos que se hará en la
+# -La clase facturacion: Describe un pedido de lista de consumos que se hará en la
 #  base de datos. Considerando los requerimientos de Innova, se piden consumos
 #  para un mes de facturación en particular
 #
@@ -34,13 +34,21 @@ class consumo:
     -La cantidad de unidades consumidas
   """
   def __init__(self,numserie,fecha,codservicio,cantidad):
-    
-    
     self.numserie = numserie
     self.fecha = fecha
     self.codservicio = codservicio
     self.cantidad = cantidad
-    
+  
+  
+  """
+  Representa el consumo como un string
+  """
+  def __str__(self):
+    return '''Código del servicio: %s | Fecha del Consumo: %s | Cantidad: %s''' % (self.codservicio,self.fecha,str(self.cantidad))
+  """
+  Inserta el consumo en la DB
+  """
+  def sync(self):
     # Conexión con la base de datos
     self.conexiondb = database.operacion(
       'Operacion que inserta un consumo en la DB',
@@ -127,4 +135,71 @@ def crearConsumoInteractivo():
     print 'Inserte la cantidad de unidades consumidas'
     cantidad = int(raw_input('-->'))
   
-  return consumo(numserie,fecha.strftime('%d/%m/%Y'),codserv,cantidad)
+  miConsumo = consumo(numserie,fecha.strftime('%d/%m/%Y'),codserv,cantidad)
+  miConsumo.sync()
+  return miConsumo
+
+
+"""
+Define una lista de consumos de un mismo producto
+
+Atributos:
+  - Número de serie del producto
+  - Inicio de la facturación
+  - Fín de la facturacion
+  - Lista de consumos
+"""
+class facturacion:
+  
+  """
+  Crea una facturacion
+  Parámetros:
+    -Número de serie del producto
+    -Inicio de la facturación: En formato DD/MM/YYYY
+    -Fín de la facturacion: En formato DD/MM/YYYY
+  """
+  def __init__(self,numserie,inicio,fin):
+    self.numSerieProducto = numserie
+    self.inicioFacturacion = inicio
+    self.finFacturacion = fin
+    self.listaConsumos = []
+    
+    # Conexión con la base de datos
+    self.conexiondb = database.operacion(
+      'Operacion que lista los consumos para un equipo en el rango dado',
+      '''select * from consume where numserie = \'%s\' and 
+      fecha >= to_date(\'%s\','DD/MM/YYYY') and 
+      fecha <= to_date(\'%s\','DD/MM/YYYY') order by fecha asc;''' 
+      % (self.numSerieProducto,self.inicioFacturacion,self.finFacturacion),
+      dbparams.dbname,dbparams.dbuser,dbparams.dbpass
+      )
+    result = self.conexiondb.execute()
+    
+    # Para cada tupla consumo, crea un consumo y agregalo a mi lista
+    for i in result:
+      self.listaConsumos.append(
+	consumo(self.numSerieProducto,i[2].strftime('%d/%m/%Y'),i[1],i[3])
+      )
+    self.conexiondb.cerrarConexion()
+  
+  """
+  Itera sobre la facturacion, iterando sobre la lista de consumos
+  """
+  def __iter__(self):
+    return self.listaConsumos.__iter__()
+  
+  """
+  Representación en string de la facturacion.
+  Se representa como la concatenación de los strings de todos los consumos
+  """
+  def __str__(self):
+    myString = ""
+    for i in self:
+      myString += str(i) + '\n'
+    return myString[:len(myString)-1]
+    
+if __name__ == '__main__':
+  #a = facturacion('CBZ27326','30/04/2000','30/04/2015')
+  #print a
+  print 'Esto no es un ejecutable. Es un módulo. MÓDULO!'
+  
