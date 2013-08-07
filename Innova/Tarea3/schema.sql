@@ -2,6 +2,19 @@
 --************************* CREACION DE TABLAS *********************************
 --******************************************************************************
 
+-- Se ha desarrollado un código de error para los Warnings que se emiten de la base de datos
+-- Los códigos tienen la forma INVEXYY donde:
+-- INVE es una abreviación para InnovaError, 
+--
+-- X es un número que representa la severidad del error, donde 0 es para triggers que mantienen la 
+-- consistencia, y 1 para advertencias que no afectan las inserciones
+--
+-- YY Es un código único que se le asigna a cada error. Se presenta un diccionario para estos códigos
+--
+-- Severidad 0:
+-- 01: No se puede agregar un consumo si no hay un plan o paquete que lo respalde
+--
+
 CREATE TYPE plantype AS ENUM ('infinito', 'paquete');
 CREATE TYPE planmode AS ENUM ('prepago', 'postpago');
 
@@ -353,7 +366,7 @@ RETURNS TRIGGER AS $consumoCoherente$
                      WHERE numserie = NEW.numserie AND codserv = NEW.codserv)
           THEN RETURN NEW;
       ELSE 
-        RAISE WARNING 'E301: No se puede agregar un consumo si no hay un plan o paquete que lo respalde';
+        RAISE WARNING 'INVE001: No se puede agregar un consumo si no hay un plan o paquete que lo respalde';
         RETURN NULL;
       END IF;
     END IF;

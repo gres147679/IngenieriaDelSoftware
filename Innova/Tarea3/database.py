@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import psycopg2
 import psycopg2.extras
+import re
 
 # Clase que contempla el objeto Base de Datos
 # Atributos:
@@ -29,14 +30,18 @@ class database(object):
         self.cursor.close()
         self.conexion.close()
 
-# Clase que contempla una operacion a la Base de Datos
+# Clase que contempla una operacion a la Base de Datos. Es sensible a los códigos de error
+# de INNOVA. Para mayor información consulte el archivo schema.sql
 # Atributos:
 #   - descripcion: Una breve reseña de la operacion
 #   - comando: El comando en sql a ejecutar
+#   - insercionRechazada: Flag que indica que un trigger rechazó la inserción
+#     de la(s) tupla(s) en la base de datos
 
 class operacion(database):
     descripcion = ""
     comando = ""
+    insercionRechazada = 0
   
     def __init__(self,des,comm,name,user,password):
         super(operacion,self).__init__(name,user,password)
@@ -51,12 +56,19 @@ class operacion(database):
         return str([desc[0] for desc in self.cursor.description])
     
     def execute(self):
+	self.cursor.execute(self.comando)    
+	for i in self.conexion.notices:
+	  i2 = str(i).split(':')
+	  
+	  # Si el Warning coincide con un error definido de la
+	  # base de datos de Innova, se imprime
+	  if re.match('INVE\d+',i2[1].strip()):
+	    print i2[2].strip()
+	    if re.match('INVE0\d+',i2[1].strip()):
+	      self.insercionRechazada = 1
+	    
         try:
-	    self.cursor.execute(self.comando)
             return self.cursor.fetchall()
-        except psycopg2.ProgrammingError as e:
-	    # No hay valor de retorno de la operación
-	    print 'Pene'
+        except psycopg2.ProgrammingError:
+	    # La consulta no devuelve tuplas
             return [] 
-
-    
