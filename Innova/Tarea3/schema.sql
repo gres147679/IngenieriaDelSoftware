@@ -352,7 +352,9 @@ RETURNS TRIGGER AS $consumoCoherente$
                      FROM CONTRATA NATURAL JOIN CONTIENE
                      WHERE numserie = NEW.numserie AND codserv = NEW.codserv)
           THEN RETURN NEW;
-      ELSE RETURN NULL;
+      ELSE 
+        RAISE WARNING 'E301: No se puede agregar un consumo si no hay un plan o paquete que lo respalde';
+        RETURN NULL;
       END IF;
     END IF;
       
