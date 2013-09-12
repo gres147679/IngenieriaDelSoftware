@@ -90,5 +90,6 @@ if __name__ == '__main__':
 # No considera cuando varios consumos sumados exceden el limite del plan, sino solamente si un consumo excede el limite
 # Cuando un consumo esta cubierto por el plan, se cobra unicamente la renta del plan, no el valor del servicio
 # No cobra la renta del plan
-# No estoy seguro si considera mas de una afiliacion (caso de plan + paquete de servicios por ejemplo) que es con la relacion contrata
+# No estoy seguro si considera mas de una afiliacion (caso de plan + paquete de servicios por ejemplo) que es con las relaciones contrata y contiene
+# Le hace falta checkear el año de los consumos
     

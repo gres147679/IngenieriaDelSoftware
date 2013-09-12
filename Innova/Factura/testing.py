@@ -314,7 +314,7 @@ class query3Test(unittest.TestCase):
 	  return
         print("Prueba 5 lista")
         
-    # Prueba 5
+    # Prueba 6
     ## Caso en el que un cliente consume dos servicios estando afiliado a un plan
     ## que los contiene: en un caso la cantidad consumida esta cubierta, y en el otro
     ## no. En ambos casos hay una cantidad variable de consumos pequeños
@@ -392,14 +392,14 @@ class query3Test(unittest.TestCase):
         theoreticResult = 215
         
         try:
-          self.assertEqual(result,theoreticResult,"Error en la prueba 5: Se esperaba %d y se recibio %d" % (theoreticResult,result));
+          self.assertEqual(result,theoreticResult,"Error en la prueba 6: Se esperaba %d y se recibio %d" % (theoreticResult,result));
         except AssertionError,e:
 	  print e
-	  print("Prueba 5 FALLIDA")
+	  print("Prueba 6 FALLIDA")
 	  return
-        print("Prueba 5 lista")
+        print("Prueba 6 lista")
         
-    # Prueba 6
+    # Prueba 7
     ## Caso en el que un cliente consume tres servicios estando afiliado a un plan
     ## que los contiene: en el primer caso la cantidad consumida esta cubierta, en el segundo
     ## no. En el tercer caso el cliente esta afiliado a un paquete que contiene dicho plan, y 
@@ -505,14 +505,14 @@ class query3Test(unittest.TestCase):
         theoreticResult = 315
         
         try:
-          self.assertEqual(result,theoreticResult,"Error en la prueba 6: Se esperaba %d y se recibio %d" % (theoreticResult,result));
+          self.assertEqual(result,theoreticResult,"Error en la prueba 7: Se esperaba %d y se recibio %d" % (theoreticResult,result));
         except AssertionError,e:
 	  print e
-	  print("Prueba 6 FALLIDA")
+	  print("Prueba 7 FALLIDA")
 	  return
-        print("Prueba 6 lista")
+        print("Prueba 7 lista")
         
-    # Prueba 7
+    # Prueba 8
     ## Caso en el que un cliente consume tres servicios estando afiliado a un plan
     ## que los contiene: en el primer caso la cantidad consumida esta cubierta, en el segundo
     ## no. En el tercer caso el cliente esta afiliado a un paquete que contiene dicho plan, y 
@@ -618,12 +618,12 @@ class query3Test(unittest.TestCase):
         theoreticResult = 325
         
         try:
-          self.assertEqual(result,theoreticResult,"Error en la prueba 7: Se esperaba %d y se recibio %d" % (theoreticResult,result));
+          self.assertEqual(result,theoreticResult,"Error en la prueba 8: Se esperaba %d y se recibio %d" % (theoreticResult,result));
         except AssertionError,e:
 	  print e
-	  print("Prueba 7 FALLIDA")
+	  print("Prueba 8 FALLIDA")
 	  return
-        print("Prueba 7 lista")
+        print("Prueba 8 lista")
         
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']
