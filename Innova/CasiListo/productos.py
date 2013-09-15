@@ -132,11 +132,8 @@ def obtenerProducto(nserie):
                 dbparams.dbname,dbparams.dbuser,dbparams.dbpass
             )
             for row in conexiondb.execute():
-                producto = 'Numero de Serie: ' + str(row['numserie'])
-                producto += ' Nombre: ' + str(row['nombreprod'])
-                producto += ' RIF: ' + str(row['rif'])
-                producto += ' Cedula: ' + str(row['cedula'])
-                print producto
+                producto = 'Producto: ' + str(row['nombreprod'])
+                producto += '\nNumero de Serie: ' + str(row['numserie'])
     return producto
 #
 # Indica si un cliente se encuentra o no en la base de datos.

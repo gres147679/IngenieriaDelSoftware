@@ -9,6 +9,7 @@ import productos as pr
 import validacion
 import database as db
 import dbparams
+import datetime
 
 
 def pedirFactura():
@@ -53,6 +54,7 @@ def pedirFactura():
 class Factura:
     def __init__(self, idCliente,idProducto):                   
         self.idProducto = idProducto
+        self.producto = pr.obtenerProducto(idProducto)
         self.cliente = mc.busquedaCliente(idCliente)
         self.mesFacturacion = self.buscarMes()
         self.anioFacturacion = self.buscarAnio()
@@ -191,9 +193,11 @@ class Factura:
         return total + renta
     
     def __str__(self):
+        now = datetime.datetime.now()
         string = '\n=========================================================================================================='
-        string += '\n{0:50}FACTURA\n'.format(' ') + str(self.cliente)
-        string += '\n\n\n{4:45}SERVICIOS CONSUMIDOS\n\n{0:30} | {1:20} | {2:20} | {3:20}'.format('SERVICIO', 'TOTAL CONSUMIDO', 'LIMITE DEL PLAN', 'MONTO A COBRAR POR EXCESO',' ')
+        string += '\n{0:50}FACTURA'.format(' ') + '{0:20}Fecha de emisión: '.format(' ') + str(now.strftime("%d-%m-%Y")) + '\n' + str(self.cliente)
+        string += '\n' + str(self.producto)
+        string += '\n\n\n{4:40}SERVICIOS CONSUMIDOS (%s-%s)\n\n{0:30} | {1:20} | {2:20} | {3:20}'.format('SERVICIO', 'TOTAL CONSUMIDO', 'LÍMITE DEL PLAN', 'MONTO A COBRAR POR EXCESO',' ') % (self.mesFacturacion, self.anioFacturacion)
         string += '\n----------------------------------------------------------------------------------------------------------'
         for con in self.listaCobrar.keys():
             string += '\n{0:30} | {1:20} | {2:20} | {3:20}'.format \
