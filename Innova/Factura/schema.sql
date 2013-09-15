@@ -21,7 +21,7 @@ CREATE TYPE planmode AS ENUM ('prepago', 'postpago');
 CREATE TABLE CLIENTE (
   cedula        integer         PRIMARY KEY,
   nombrecl      varchar(50)     NOT NULL,
-  dirección     varchar(100)    NOT NULL
+  direccion     varchar(100)    NOT NULL
 );
 
 CREATE TABLE EMPRESA (

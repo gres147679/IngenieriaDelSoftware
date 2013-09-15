@@ -436,10 +436,10 @@ class query3Test(unittest.TestCase):
         (3002,1002,0.2,100);
         
         insert into PAQUETE values
-        (4001,"PegaoSMS",100);
+        (4001,'PegaoSMS',100);
         
         insert into CONTIENE values
-        (4001,1003,300)
+        (4001,1003,300);
         
         insert into AFILIA values
         ('CBZ27326',3002,'paquete');
@@ -549,10 +549,10 @@ class query3Test(unittest.TestCase):
         (3002,1002,0.2,100);
         
         insert into PAQUETE values
-        (4001,"PegaoSMS",100);
+        (4001,'PegaoSMS',100);
         
         insert into CONTIENE values
-        (4001,1003,100)
+        (4001,1003,100);
         
         insert into AFILIA values
         ('CBZ27326',3002,'paquete');
