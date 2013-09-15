@@ -3,6 +3,6 @@
 #
 # Módulo que contiene los parámetros de conexión de la base de datos
 
-dbname = "Tarea3"
-dbuser = "postgres"
-dbpass = "123456"
+dbname = "tarea"
+dbuser = "jljb1990"
+dbpass = ""

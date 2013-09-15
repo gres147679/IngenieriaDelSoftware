@@ -20,8 +20,8 @@ class cliente:
     #
     def __str__(self):
         writeRow = 'Cedula: ' + str(self.id)
-        writeRow += ' Nombre: ' + self.nombre
-        writeRow += ' Direccion: ' + self.dir
+        writeRow += '\nNombre: ' + self.nombre
+        writeRow += '\nDireccion: ' + self.dir
         
         return writeRow
     

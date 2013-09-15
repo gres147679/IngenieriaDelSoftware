@@ -57,8 +57,12 @@ class Factura:
         self.mesFacturacion = self.buscarMes()
         self.anioFacturacion = self.buscarAnio()
         self.listaConsumos = self.buscarConsumos()
+        self.listaCobrar = {}
+        self.nombrePlan = ''
+        self.totalPlan = 0
+        self.totalPaquete = 0
         self.montoTotalCobrar = self.totalCobrar()
-            
+
     def buscarCedula(self):
         try:
             conexion = db.operacion ("Buscamos la cedula del cliente",
@@ -103,10 +107,13 @@ class Factura:
 
         #Buscamos la renta del plan que se va a cobrar al producto.      
         conexion = db.operacion("Buscamos la renta del plan que se va a cobrar al producto",
-                                """SELECT renta_basica FROM plan WHERE codplan = %s""" % codplan,
+                                """SELECT renta_basica, nombreplan FROM plan WHERE codplan = %s""" % codplan,
                                 dbparams.dbname,dbparams.dbuser,dbparams.dbpass)
         resultado = conexion.execute()
         renta = int(resultado[0][0])
+        
+        self.nombrePlan = str(resultado[0][1])
+        self.totalPlan = renta
         
         #Buscamos la suma de todos los consumos por servicio hechos por el producto en el año y mes introducidos por el usuario.
         #Lo guardamos en un diccionario donde la clave es el codigo del servicio.
@@ -124,11 +131,10 @@ class Factura:
                 totalConsumido[row[0]] = int(row[1])
         
         #Buscamos los servicios ofrecidos por el plan y la cantidad y tarifa ofrecidos por este. 
-        #El resultado se guarda en un diccionario
-        #donde la clave es el codigo del servicio.
+        #El resultado se guarda en un diccionario donde la clave es el codigo del servicio.
         
         conexion = db.operacion("Buscamos los servicios ofrecidos por el plan, ademas de la cantidad y tarifa ofrecidos por este",
-                                """SELECT inc.codserv, inc.cantidad, inc.tarifa FROM incluye AS inc, servicio AS serv 
+                                """SELECT inc.codserv, inc.cantidad, inc.tarifa, serv.nombreserv FROM incluye AS inc, servicio AS serv 
                                 WHERE inc.codplan =  %s and serv.codserv = inc.codserv;""" % codplan,
                                 dbparams.dbname,dbparams.dbuser,dbparams.dbpass)
         
@@ -137,12 +143,12 @@ class Factura:
         totalPlan = {}
         
         for row in resultado:
-            totalPlan[row[0]] = [row[1], row[2]]
+            totalPlan[row[0]] = [row[1], row[2], row[3]]
                 
         #Se busca si el producto este asociado a algun paquete. De estarlo, las cantidades de servicio ofrecidas se agregan al
         #diccionario de los servicios ofrecidos por el plan.
         conexion = db.operacion("Paquetes a los que esta asociado un producto",
-                                """SELECT codserv, cantidad, costo FROM contrata NATURAL JOIN contiene NATURAL JOIN servicio 
+                                """SELECT codserv, cantidad, costo, nombreserv FROM contrata NATURAL JOIN contiene NATURAL JOIN servicio 
                                 WHERE numserie = \'%s\'""" % self.idProducto,
                                 dbparams.dbname,dbparams.dbuser,dbparams.dbpass)
         
@@ -152,7 +158,7 @@ class Factura:
             if totalPlan.has_key(codserv):
                 totalPlan[codserv][0] = totalPlan[codserv][0] + int(row[1])
             else:
-                totalPlan[codserv] = [int(row[1]), row[2]]
+                totalPlan[codserv] = [int(row[1]), row[2], row[3]]
         
         #Se busca el costo total de todos los paquetes a los que esta suscrito el producto. El resultado se almacena
         #en el total a cobrar.
@@ -167,21 +173,37 @@ class Factura:
         else:
             total = int(resultado[0][0])
         
+        self.totalPaquete = total
         #Se verifica la suma de los consumos por servicio del producto, si excede el valor ofrecido por el plan/paquete
         #entonces se cobra lo indicado por el plan. En caso que el serivicio sea ofrecido por un paquete, se cobra por exceso
         #el costo del servicio.
+        
+        
         for con in totalConsumido.keys():
             consumido = totalConsumido[con]
             limite = totalPlan[con][0]
+            self.listaCobrar[con] = [totalPlan[con][2], consumido, limite, 0]
             if consumido > limite:
-                total = total + (consumido - limite) * totalPlan[con][1]
+                exceso = (consumido - limite) * totalPlan[con][1]
+                total = total + exceso
+                self.listaCobrar[con][3] = exceso
         
+        print totalConsumido
+        print totalPlan
         return total + renta
     
-
+    def __str__(self):
+        string = '\n{0:45}FACTURA\n'.format(' ') + str(self.cliente)
+        string += '\n{4:45}SERVICIOS CONSUMIDOS\n{0:30} | {1:20} | {2:20} | {3:20}'.format('SERVICIO', 'TOTAL CONSUMIDO', 'LIMITE DEL PLAN', 'MONTO A COBRAR POR EXCESO',' ')
+        for con in self.listaCobrar.keys():
+            string += '\n{0:30} | {1:20} | {2:20} | {3:20}'.format \
+                        (self.listaCobrar[con][0], str(self.listaCobrar[con][1]), str(self.listaCobrar[con][2]), str(self.listaCobrar[con][3]))
+                    
+        string += '\nMonto a cobrar por el plan ' + self.nombrePlan + ': ' + str(self.totalPlan)
+        string += '\nMonto a cobrar por los paquetes afiliados: ' + str(self.totalPaquete)
+        string += '\nTOTAL: ' + str(self.montoTotalCobrar)
+        return string
 if __name__ == '__main__':
     
     factura = pedirFactura()
-    print factura.cliente
-    for row in factura.listaConsumos:
-        print row
+    print factura
