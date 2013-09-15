@@ -8,13 +8,14 @@ import psycopg2
 import psycopg2.extras
 import unittest
 import database
+import dbparams
 
 ##*** Clase de Afiliaciones *************************************************
 
 class Afiliaciones:
-    nombreBase = "tarea"
-    usuarioBase = "reinaldo"
-    passwordBase = ""
+    nombreBase = dbparams.dbname
+    usuarioBase = dbparams.dbuser
+    passwordBase = dbparams.dbpass
     ## Constructor de la clase
     def __init__ (self,serie_producto,cod_plan):
         self.producto = serie_producto
