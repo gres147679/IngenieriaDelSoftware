@@ -84,8 +84,9 @@ class Factura:
         conexion = db.operacion("Buscamos todos los consumos asociados a un producto",
                              """ SELECT to_char(con.fecha, 'DD MM YYYY'), serv.nombreserv, con.cantidad
                                  FROM consume AS con, servicio AS serv 
-                                 WHERE con.numserie = \'%s\'  AND to_number(to_char(con.fecha, 'MM'),'9999999') = %s 
-                                 AND serv.codserv = con.codserv""" % (self.idProducto, self.mesFacturacion),
+                                 WHERE con.numserie = \'%s\' AND to_char(con.fecha, 'MM')::integer = %s::integer
+                                 AND to_char(con.fecha, 'YYYY')::integer = %s::integer
+                                 AND serv.codserv = con.codserv""" % (self.idProducto, self.mesFacturacion, self.anioFacturacion),
                                  dbparams.dbname,dbparams.dbuser,dbparams.dbpass)
      
         return conexion.execute()
@@ -98,10 +99,7 @@ class Factura:
         resultado = conexion.execute()
         
         if len(resultado) == 0:
-            conexion = db.operacion("Buscamos el codigo del plan asociado al producto",
-                                    """SELECT codplan FROM activa WHERE numserie = \'%s\'""" % self.idProducto,
-                                    dbparams.dbname,dbparams.dbuser,dbparams.dbpass)
-            resultado = conexion.execute()
+            print "No hay plan"
 
         codplan = resultado[0][0]
 
@@ -193,15 +191,18 @@ class Factura:
         return total + renta
     
     def __str__(self):
-        string = '\n{0:45}FACTURA\n'.format(' ') + str(self.cliente)
-        string += '\n{4:45}SERVICIOS CONSUMIDOS\n{0:30} | {1:20} | {2:20} | {3:20}'.format('SERVICIO', 'TOTAL CONSUMIDO', 'LIMITE DEL PLAN', 'MONTO A COBRAR POR EXCESO',' ')
+        string = '\n=========================================================================================================='
+        string += '\n{0:50}FACTURA\n'.format(' ') + str(self.cliente)
+        string += '\n\n\n{4:45}SERVICIOS CONSUMIDOS\n\n{0:30} | {1:20} | {2:20} | {3:20}'.format('SERVICIO', 'TOTAL CONSUMIDO', 'LIMITE DEL PLAN', 'MONTO A COBRAR POR EXCESO',' ')
+        string += '\n----------------------------------------------------------------------------------------------------------'
         for con in self.listaCobrar.keys():
             string += '\n{0:30} | {1:20} | {2:20} | {3:20}'.format \
                         (self.listaCobrar[con][0], str(self.listaCobrar[con][1]), str(self.listaCobrar[con][2]), str(self.listaCobrar[con][3]))
-                    
-        string += '\nMonto a cobrar por el plan ' + self.nombrePlan + ': ' + str(self.totalPlan)
+        string += '\n----------------------------------------------------------------------------------------------------------'
+        string += '\n\nMonto a cobrar por el plan ' + self.nombrePlan + ': ' + str(self.totalPlan)
         string += '\nMonto a cobrar por los paquetes afiliados: ' + str(self.totalPaquete)
-        string += '\nTOTAL: ' + str(self.montoTotalCobrar)
+        string += '\n\nTOTAL: ' + str(self.montoTotalCobrar)
+        string += '\n=========================================================================================================='
         return string
 if __name__ == '__main__':
     
