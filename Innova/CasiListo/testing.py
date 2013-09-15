@@ -84,7 +84,7 @@ class FacturaTest(unittest.TestCase):
 	self.myConsult.execute()
 	testBill = Factura.Factura(22714709,"CBZ27326")
         result = testBill.totalCobrar()
-        theoreticResult = 0
+        theoreticResult = 211
         try:
           self.assertEqual(result,theoreticResult,"Error en la prueba 1: Se esperaba %d y se recibio %d" % (theoreticResult,result));
         except AssertionError,e:
@@ -99,7 +99,6 @@ class FacturaTest(unittest.TestCase):
     ## retornar el valor de la renta básica del plan
     
     def test_unConsumoConAfiliacion(self):
-        print "cuca"
         self.myConsult.setComando("""
         insert into EMPRESA values
         (12345678,'MOCEL');
@@ -152,7 +151,6 @@ class FacturaTest(unittest.TestCase):
     ## una fecha futura, para asegurarse del checkeo de fechas
     
     def test_unConsumoConAfiliacionNulo(self):
-        print "webo"
         self.myConsult.setComando("""
         insert into EMPRESA values
         (12345678,'MOCEL');
