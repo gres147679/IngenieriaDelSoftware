@@ -85,12 +85,13 @@ CREATE TABLE AFILIA (
   PRIMARY KEY (numserie, codplan)
 );
 
+
 CREATE TABLE CONSUME (
+  consumo_pkey  SERIAL          primary key,
   numserie      varchar(20)     references PRODUCTO(numserie),
   codserv       integer         references SERVICIO(codserv),
   fecha         date            NOT NULL,
   cantidad      int             NOT NULL,
-  PRIMARY KEY (numserie,codserv,fecha),
   CONSTRAINT cantidadConsumePositiva CHECK (cantidad > 0)
 );
 
