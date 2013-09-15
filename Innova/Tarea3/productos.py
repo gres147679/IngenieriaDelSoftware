@@ -159,13 +159,13 @@ class Producto():
         return writeRow
         
       ##### MAIN #####
-if __name__ == "__main__":
+#if __name__ == "__main__":
 
-    producto2 = Producto()
+#    producto2 = Producto()
     #producto2.pedirProducto()
     #producto2.eliminarProducto('123')
-    print producto2.cantidadProductos()
-    print producto2.buscarProducto('p1223')
-    producto2.obtenerProducto('p123')
+#    print producto2.cantidadProductos()
+#    print producto2.buscarProducto('p1223')
+#    producto2.obtenerProducto('p123')
     
     #### END MAIN ####

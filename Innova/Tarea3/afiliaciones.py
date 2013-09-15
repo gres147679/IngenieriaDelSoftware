@@ -122,21 +122,17 @@ class Afiliaciones:
     def CrearContratacion (self):
         try:
             ## Verificamos si el paquete existe en la base de datos
-            self.cur.execute("SELECT codpaq FROM PAQUETE WHERE codpaq = %(codpaq)s",
-            {'codpaq' : self.plan})
+            self.cur.execute("SELECT codpaq FROM PAQUETE WHERE codpaq = %(codpaq)s", {'codpaq' : self.plan})
             if self.cur.rowcount == 0:
                 raise Exception("\nEl paquete introducido no existe en la base de datos")
             
             ## Verificamos si la contratacion ya existe en la base de datos
-            self.cur.execute("""SELECT codpaq, numserie FROM CONTRATA 
-            					WHERE codpaq = %(codpaq)s AND 
-                                numserie = %(numserie)s""", 
-        	{'codpaq' : self.plan, 'numserie' : self.producto})
+            self.cur.execute("""SELECT codpaq, numserie FROM CONTRATA WHERE codpaq = %(codpaq)s AND 
+                                numserie = %(numserie)s""", {'codpaq' : self.plan, 'numserie' : self.producto})
             if self.cur.rowcount != 0:
                 raise Exception("\nLa afiliacion entre dichos producto y paquete ya existe")
             
-            self.cur.execute("INSERT INTO CONTRATA VALUES (%s, %s)",
-            (self.producto, self.plan))
+            self.cur.execute("INSERT INTO CONTRATA VALUES (%s, %s)", (self.producto, self.plan))
             print '\nSe ha creado la afiliacion del producto con el paquete deseado'
             
             ## Guardamos los cambios y cerramos la base de datos
@@ -150,15 +146,14 @@ class Afiliaciones:
     ## Elimina la afiliacion entre un producto y un plan en especifico
     def DesafiliarProducto (self):
         try:
-            self.cur.execute("""SELECT numserie, codplan FROM ACTIVA WHERE 
-            			codplan = %(codplan)s AND numserie = %(numserie)s""", 
+            self.cur.execute("""SELECT numserie, codplan FROM ACTIVA WHERE codplan = %(codplan)s AND
+                        numserie = %(numserie)s""", 
             {'codplan' : self.plan, 'numserie' : self.producto})
 
             # Si no se encuntra la afiliacion entre los planes prepago
             if self.cur.rowcount == 0:
-                self.cur.execute("""SELECT numserie FROM AFILIA 
-                					WHERE codplan = %(codplan)s AND
-                        			numserie = %(numserie)s""", 
+                self.cur.execute("""SELECT numserie FROM AFILIA WHERE codplan = %(codplan)s AND
+                        numserie = %(numserie)s""", 
             {'codplan' : self.plan, 'numserie' : self.producto})
                 
                 # Si no se encuentra la afiliacion entre los planes postpago
@@ -168,17 +163,13 @@ class Afiliaciones:
                 # Si se encuentra la afiliacion entre los planes postpago, eliminamos dicha afiliacion
                 else:
                     
-                    self.cur.execute("""DELETE FROM AFILIA 
-                    				WHERE codplan = %(codplan)s 
-                    				AND numserie = %(numserie)s""",
-                    {'codplan' : self.plan, 'numserie' : self.producto})
+                    self.cur.execute("DELETE FROM AFILIA WHERE codplan = %(codplan)s AND numserie = %(numserie)s",
+                                {'codplan' : self.plan, 'numserie' : self.producto})
                     print '\nSe ha eliminado la afiliacion exitosamente'
             
             # Si se encuentra la afiliacion entre los planes prepago, eliminamos dicha afiliacion
             else:
-                self.cur.execute("""DELETE FROM ACTIVA 
-                				WHERE codplan = %(codplan)s 
-                				AND numserie = %(numserie)s""",
+                self.cur.execute("DELETE FROM ACTIVA WHERE codplan = %(codplan)s AND numserie = %(numserie)s",
                 {'codplan' : self.plan, 'numserie' : self.producto})
                 print '\nSe ha eliminado la afiliacion exitosamente'
                 
@@ -193,8 +184,7 @@ class Afiliaciones:
     ## Informa a que plan o planes esta afiliado un producto
     def ConsultarPlanes (self):
         try:
-            self.cur.execute("""SELECT nombrepaq FROM CONTRATA NATURAL JOIN PAQUETE 
-            				WHERE numserie = %(numserie)s""", 
+            self.cur.execute("SELECT nombrepaq FROM CONTRATA NATURAL JOIN PAQUETE WHERE numserie = %(numserie)s", 
             {'numserie' : self.producto})
             
             nombreplan = self.cur.fetchall()
@@ -204,8 +194,7 @@ class Afiliaciones:
             if self.cur.rowcount == 0:
                 print 'El producto no esta afiliado a ningun paquete'
             
-            self.cur.execute("""SELECT nombreplan FROM ACTIVA NATURAL JOIN PLAN 
-            				WHERE numserie = %(numserie)s""", 
+            self.cur.execute("SELECT nombreplan FROM ACTIVA NATURAL JOIN PLAN WHERE numserie = %(numserie)s", 
             {'numserie' : self.producto})
             
             nombreplan = self.cur.fetchall()
@@ -214,8 +203,7 @@ class Afiliaciones:
                 
             if self.cur.rowcount == 0:
                 
-                self.cur.execute("""SELECT nombreplan FROM AFILIA NATURAL JOIN PLAN
-                				 WHERE numserie = %(numserie)s""", 
+                self.cur.execute("SELECT nombreplan FROM AFILIA NATURAL JOIN PLAN WHERE numserie = %(numserie)s", 
                 {'numserie' : self.producto}) 
                 
                 nombreplan = self.cur.fetchall()
@@ -235,17 +223,14 @@ class Afiliaciones:
     ## Elimina la afiliacion entre un producto y un paquete de servicios.
     def desafiliarContratacion(self):
         try:
-            self.cur.execute("""SELECT numserie, codpaq FROM CONTRATA 
-            				WHERE codpaq = %(codplan)s AND
-            					numserie = %(numserie)s""", 
+            self.cur.execute("""SELECT numserie, codpaq FROM CONTRATA WHERE codpaq = %(codplan)s AND
+            numserie = %(numserie)s""", 
             {'codplan' : self.plan, 'numserie' : self.producto})
             
             if self.cur.rowcount == 0:
                 print 'El producto no esta afiliado al paquete introducido'
             else:
-                self.cur.execute("""DELETE FROM CONTRATA 
-                				WHERE codpaq = %(codplan)s 
-                				AND numserie = %(numserie)s""",
+                self.cur.execute("DELETE FROM CONTRATA WHERE codpaq = %(codplan)s AND numserie = %(numserie)s",
                 {'codplan' : self.plan, 'numserie' : self.producto})
                 print 'Se ha eliminado la contratacion exitosamente'
             
@@ -255,16 +240,16 @@ class Afiliaciones:
             print 'Se ha conseguido un error. ', e
 
 ## Main de pruebas
-if __name__ == '__main__':
-    Afiliacion = Afiliaciones('a1',1)
-    Afiliacion.CrearAfiliacion()
-    Afiliacion = Afiliaciones('a1',10)
-    Afiliacion.CrearContratacion()
-    Afiliacion = Afiliaciones('a1',10)
-    Afiliacion.CrearContratacion()
-    Afiliacion = Afiliaciones('a1',1)
-    Afiliacion.DesafiliarProducto()
-    Afiliacion = Afiliaciones('a1',1)
-    Afiliacion.ConsultarPlanes()
-    Afiliacion = Afiliaciones('a1',10)
-    Afiliacion.desafiliarContratacion()    
+#if __name__ == '__main__':
+#    Afiliacion = Afiliaciones('a1',1)
+#    Afiliacion.CrearAfiliacion()
+#    Afiliacion = Afiliaciones('a1',10)
+#    Afiliacion.CrearContratacion()
+#    Afiliacion = Afiliaciones('a1',10)
+#    Afiliacion.CrearContratacion()
+#    Afiliacion = Afiliaciones('a1',1)
+#    Afiliacion.DesafiliarProducto()
+#    Afiliacion = Afiliaciones('a1',1)
+#    Afiliacion.ConsultarPlanes()
+#    Afiliacion = Afiliaciones('a1',10)
+#    Afiliacion.desafiliarContratacion()    

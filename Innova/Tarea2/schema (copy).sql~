@@ -2,26 +2,13 @@
 --************************* CREACION DE TABLAS *********************************
 --******************************************************************************
 
--- Se ha desarrollado un código de error para los Warnings que se emiten de la base de datos
--- Los códigos tienen la forma INVEXYY donde:
--- INVE es una abreviación para InnovaError, 
---
--- X es un número que representa la severidad del error, donde 0 es para triggers que mantienen la 
--- consistencia, y 1 para advertencias que no afectan las inserciones
---
--- YY Es un código único que se le asigna a cada error. Se presenta un diccionario para estos códigos
---
--- Severidad 0:
--- 01: No se puede agregar un consumo si no hay un plan o paquete que lo respalde
---
-
 CREATE TYPE plantype AS ENUM ('infinito', 'paquete');
 CREATE TYPE planmode AS ENUM ('prepago', 'postpago');
 
 CREATE TABLE CLIENTE (
   cedula        integer         PRIMARY KEY,
   nombrecl      varchar(50)     NOT NULL,
-  direccion     varchar(100)    NOT NULL
+  dirección     varchar(100)    NOT NULL
 );
 
 CREATE TABLE EMPRESA (
@@ -85,13 +72,12 @@ CREATE TABLE AFILIA (
   PRIMARY KEY (numserie, codplan)
 );
 
-
 CREATE TABLE CONSUME (
-  consumo_pkey  SERIAL          primary key,
   numserie      varchar(20)     references PRODUCTO(numserie),
   codserv       integer         references SERVICIO(codserv),
   fecha         date            NOT NULL,
   cantidad      int             NOT NULL,
+  PRIMARY KEY (numserie,codserv,fecha),
   CONSTRAINT cantidadConsumePositiva CHECK (cantidad > 0)
 );
 
@@ -366,9 +352,7 @@ RETURNS TRIGGER AS $consumoCoherente$
                      FROM CONTRATA NATURAL JOIN CONTIENE
                      WHERE numserie = NEW.numserie AND codserv = NEW.codserv)
           THEN RETURN NEW;
-      ELSE 
-        RAISE WARNING 'INVE001: No se puede agregar un consumo si no hay un plan o paquete que lo respalde';
-        RETURN NULL;
+      ELSE RETURN NULL;
       END IF;
     END IF;
       
@@ -511,3 +495,98 @@ EXECUTE PROCEDURE existePlan();
 CREATE TRIGGER existePlan2
 BEFORE INSERT OR UPDATE ON AFILIA FOR EACH ROW 
 EXECUTE PROCEDURE existePlan();
+
+
+--******************************************************************************
+--*************************** CONSULTAS TAREA 2 ********************************
+--*****************************************************************************/
+
+CREATE OR REPLACE FUNCTION consulta3()
+RETURNS REAL AS $$
+DECLARE
+	serialProducto PRODUCTO.numserie%TYPE;
+	consumo CONSUME%ROWTYPE;
+	codigoPlan INTEGER;
+	fechaConsumo DATE;
+	costoServ REAL;
+	sum REAL;
+  BEGIN
+  	sum := 0;
+	FOR serialProducto IN SELECT numserie FROM PRODUCTO
+	LOOP
+		RAISE NOTICE 'hey';
+		IF EXISTS (SELECT * FROM AFILIA WHERE numserie = serialProducto) THEN
+			codigoPlan := (SELECT codPlan FROM AFILIA WHERE numserie = serialProducto);
+			FOR consumo IN SELECT * FROM CONSUME WHERE numserie = serialProducto 
+			LOOP
+				IF to_char(consumo.fecha,'MM')::integer = to_char(CURRENT_DATE,'MM')::integer
+				AND to_char(consumo.fecha,'YYYY')::integer = to_char(CURRENT_DATE,'YYYY')::integer
+				AND EXISTS (SELECT cantidad FROM INCLUYE WHERE codserv = consumo.codserv
+				AND codplan = codigoPlan) THEN
+					costoServ := (SELECT tarifa FROM INCLUYE WHERE codserv = consumo.codserv
+					AND codplan = codigoPlan);
+					-- incluido = (SELECT cantidad FROM INCLUYE WHERE codserv = consumo.codserv);
+					sum := sum + consumo.cantidad*costoServ;
+				END IF; 
+			END LOOP;
+		END IF; 
+	END LOOP;
+	RETURN sum;
+  END;
+$$ LANGUAGE plpgsql;
+
+
+CREATE OR REPLACE FUNCTION consulta4()
+RETURNS REAL AS $$
+DECLARE
+  serialProducto PRODUCTO.numserie%TYPE;
+  codigoPlan INTEGER;
+  codigoServicio INTEGER;
+  servicioIncluido INTEGER;
+  consumo CONSUME%ROWTYPE;
+  diferencia INTEGER;
+  tarifaIncluida REAL;
+  cantidadConsumida INTEGER;
+  sum REAL;  
+BEGIN
+  
+  sum := 0;
+  
+  FOR serialProducto IN SELECT numserie FROM PRODUCTO
+  LOOP
+    
+    IF EXISTS (SELECT * 
+               FROM ACTIVA 
+               WHERE numserie = serialProducto) THEN
+    
+      codigoPlan = (SELECT codPlan FROM ACTIVA WHERE numserie = serialProducto);
+
+      FOR codigoServicio IN SELECT codserv FROM INCLUYE WHERE codplan = codigoPlan
+      LOOP
+        
+        cantidadConsumida := 0;
+        servicioIncluido := (SELECT cantidad FROM INCLUYE WHERE codplan = codigoPlan AND codserv = codigoServicio);
+        tarifaIncluida := (SELECT tarifa FROM INCLUYE WHERE codplan = codigoPlan AND codserv = codigoServicio);
+        
+        FOR consumo IN SELECT * FROM CONSUME WHERE numserie = serialProducto AND codserv = codigoServicio
+          AND to_char(fecha,'MM') = to_char(CURRENT_DATE,'MM')
+          AND to_char(fecha,'YYYY') = to_char(CURRENT_DATE,'YYYY')
+        LOOP
+          cantidadConsumida := cantidadConsumida + consumo.cantidad;
+        END LOOP;
+        
+        diferencia := servicioIncluido - cantidadConsumida;
+        IF (diferencia > 0) THEN
+          sum := sum + diferencia*tarifaIncluida;
+        END IF;
+        
+      END LOOP;
+      
+    END IF;
+    
+  END LOOP;
+  
+  RETURN sum;
+  
+END;
+$$ LANGUAGE plpgsql;
