@@ -1,7 +1,0 @@
-tarifa = 0
-quitar trigger tarifa nula
-costo servicio = 0
-quitar trigger servicio positivo
-cambie el tipo de codserv a real en el actualizasaldo
-estamos asumiendo precios
-tambien que la renta se renueva cada mes o algo...
