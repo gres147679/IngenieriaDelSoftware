@@ -133,7 +133,6 @@ CREATE TABLE INCLUYE (
 CREATE OR REPLACE FUNCTION existePlanPrepago()
 RETURNS TRIGGER AS $existePlanPrepago$  
   BEGIN
-  CREACIÓN DE TABLAS
     IF EXISTS (SELECT * 
               FROM ACTIVA AS origen
               WHERE NEW.numserie = origen.numserie) THEN RETURN NULL;
