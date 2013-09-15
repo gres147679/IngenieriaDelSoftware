@@ -3,8 +3,6 @@
 #!/usr/local/bin/python
 # -*- coding: utf-8 -*-
 
-
-
 import sys
 import validacion
 import moduloCliente
@@ -81,7 +79,8 @@ def main():
                 print "\nMODULO AFILIACIONES\n"                   
                 print "   1.- Afiliar un producto."
                 print "   2.- Desafiliar un producto."
-                print "   3.- Regresar al menu anterior."     
+                print "   3.- Consultar planes de un producto."
+                print "   4.- Regresar al menu anterior."     
                            
                 op3 = int(validacion.validarNumero('Opcion: '))
                 if op3 == 1:
@@ -148,9 +147,16 @@ def main():
                     producto32.cerrarConn()
                            
                 elif op3 == 3: 
-                    print "\n6.- Regresar al menu anterior."                    
-                    flag3 = False                    
-                elif (op3 > 3 or op3 <= 0):
+                    print "\n3.- Consultar planes de un producto."
+                    producto33 = productos.validarProducto()
+                    Afiliacion = afiliaciones.Afiliaciones(producto33,1) 
+                    Afiliacion.ConsultarPlanes()
+
+                elif op3 == 4: 
+                    print "\n4.- Regresar al menu anterior."                    
+                    flag3 = False 
+  
+                elif (op3 > 4 or op3 <= 0):
                     print "\nERROR: La opcion no es valida."
 
         elif op == 4:   
