@@ -75,10 +75,10 @@ class Factura:
             print "Error buscando la cedula del cliente", e
     
     def buscarMes(self):
-        return str(raw_input("Por favor, introduzca el mes de facturacion "))
+        return str(raw_input("Por favor, introduzca el mes de facturacion (MM): "))
     
     def buscarAnio(self):
-        return str(raw_input("Por favor, introduzca el año de facturacion "))
+        return str(raw_input("Por favor, introduzca el año de facturacion (YYYY): "))
 
     def buscarConsumos(self):
         conexion = db.operacion("Buscamos todos los consumos asociados a un producto",
