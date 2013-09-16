@@ -268,26 +268,40 @@ con el paquete de codigo %s""")%(self.producto, self.plan)
     ## Elimina la afiliacion entre un producto y un paquete de servicios.
     def desafiliarContratacion(self):
         try:
-            conexion = database.operacion("","""SELECT numserie, codpaq FROM 
-            CONTRATA WHERE codpaq = %s AND numserie = '%s'
-            """%(self.plan,self.producto),Afiliaciones.nombreBase,Afiliaciones.usuarioBase,
+            conexion = database.operacion("","""SELECT codpaq, nombrepaq FROM
+            CONTRATA NATURAL JOIN PAQUETE WHERE numserie = '%s'
+            """%(self.producto),Afiliaciones.nombreBase,Afiliaciones.usuarioBase,
             Afiliaciones.passwordBase)
+
             resultado = conexion.execute()
-            
-            ## Si la contratacion no existe
-            if len(resultado) == 0:
-                raise Exception("El producto no esta afiliado al paquete introducido")
+    
+            if len(resultado) != 0:
+                print "El producto esta asociado a los siguientes paquetes"
+
+                paquetes = {}
+
+                for row in resultado:
+                    codplan = str(row[0])
+                    paquetes[codplan] = row[1]
+                    print codplan + ' : ' + row[1]
+
+                entrada = ''
+
+                while not(paquetes.has_key(entrada)):
+                    entrada = str(raw_input("Por favor, introduzca el codigo del paquete que desea desafiliar\n"))
+
+                conexion.setComando("""DELETE FROM CONTRATA WHERE codpaq = %s
+                AND numserie = '%s'"""%(entrada,self.producto))
+                resultado = conexion.execute()
+                print ("""\nSe ha eliminado la contratacion del producto %s con el paquete %s exitosamente""")%(self.producto, entrada)
+
+                ## Cerramos y guardamos los cambios
+                conexion.conexion.commit()
+                conexion.cerrarConexion()
+
+            else:
+                print "El producto no tiene paquetes asociados\n"
                 
-            ## En caso de que existiera, eliminamos la contratacion
-            conexion.setComando("""DELETE FROM CONTRATA WHERE codpaq = %s 
-            AND numserie = '%s'"""%(self.plan,self.producto))
-            resultado = conexion.execute()
-            print ('\nSe ha eliminado la contratacion del producto %s con el \
-paquete %s exitosamente')%(self.producto, self.plan)
-            
-            ## Cerramos y guardamos los cambios
-            conexion.conexion.commit()
-            conexion.cerrarConexion()
         except Exception, e:
             print '\nERROR: ', e
 
@@ -349,6 +363,6 @@ if __name__ == '__main__':
     #Afiliacion.DesafiliarProducto()
     #Afiliacion = Afiliaciones('a1',1)
     #Afiliacion.ConsultarPlanes()
-    #Afiliacion = Afiliaciones('a1',10)
-    #Afiliacion.desafiliarContratacion()    
-    impPlanyPaquetes("sd")
+    Afiliacion = Afiliaciones('CBZ27326',10)
+    Afiliacion.desafiliarContratacion()
+    #impPlanyPaquetes("sd")
