@@ -186,12 +186,34 @@ def listarProductos(idCliente):
         
         return True
 
+def listarClientes():
+    cant = numeroClientes()
+    if (cant == 0):
+        print "No hay clientes en la BD"
+        return False
+    else:
+        conexiondb = database.operacion(
+        'Operacion que lista todos los clientes en la DB',
+        '''select * from cliente ''',
+        dbparams.dbname,dbparams.dbuser,dbparams.dbpass
+        )
+        result = conexiondb.execute()
+        
+        for row in result:
+            writeRow = '  Cedula: ' + str(row['cedula'])
+            writeRow+= ' | Nombre: ' + row['nombrecl'] 
+            writeRow+= ' | Direccion: ' + row['direccion'] 
+            
+            print writeRow              
+        
+        return True  
 
 #MAIN DE PRUEBA        
 if __name__== "__main__":
     
     cl = busquedaCliente(123)
     listarProductos(22714709)
+    listarClientes()
     print poseeprodCliente(1234,123)
     
     

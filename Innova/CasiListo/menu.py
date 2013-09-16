@@ -44,6 +44,10 @@ def main():
                     moduloCliente.registroCliente()
                 elif op1 == 2:     
                     print "\n2.- Consultar un cliente."
+                    
+                    print "Mostrando todos los clientes: "
+                    moduloCliente.listarClientes()
+                    
                     moduloCliente.consultaClientes()         
                 elif op1 == 3: 
                     print "\n3.- Regresar al menu anterior."
