@@ -138,66 +138,6 @@ def crearConsumoInteractivo():
   miConsumo.sync()
   return miConsumo
 
-
-"""
-Define una lista de consumos de un mismo producto en un periodo determinado
-
-Atributos:
-  - Número de serie del producto
-  - Inicio de la facturación
-  - Fín de la facturacion
-  - Lista de consumos
-"""
-class facturacion:
-  
-  """
-  Crea una facturacion
-  Parámetros:
-    -Número de serie del producto
-    -Inicio de la facturación: En formato DD/MM/YYYY
-    -Fín de la facturacion: En formato DD/MM/YYYY
-  """
-  def __init__(self,numserie,inicio,fin):
-    self.numSerieProducto = numserie
-    self.inicioFacturacion = inicio
-    self.finFacturacion = fin
-    self.listaConsumos = []
-    
-    # Conexión con la base de datos
-    self.conexiondb = database.operacion(
-      'Operacion que lista los consumos para un equipo en el rango dado',
-      '''select * from consume where numserie = \'%s\' and 
-      fecha >= to_date(\'%s\','DD/MM/YYYY') and 
-      fecha <= to_date(\'%s\','DD/MM/YYYY') order by fecha asc;''' 
-      % (self.numSerieProducto,self.inicioFacturacion,self.finFacturacion),
-      dbparams.dbname,dbparams.dbuser,dbparams.dbpass
-      )
-    result = self.conexiondb.execute()
-    
-    # Para cada tupla consumo, crea un consumo y agregalo a mi lista
-    for i in result:
-      self.listaConsumos.append(
-	consumo(self.numSerieProducto,i[2].strftime('%d/%m/%Y'),i[1],i[3])
-      )
-    self.conexiondb.cerrarConexion()
-  
-  """
-  Itera sobre la facturacion, iterando sobre la lista de consumos
-  """
-  def __iter__(self):
-    return self.listaConsumos.__iter__()
-  
-  """
-  Representación en string de la facturacion.
-  Se representa como la concatenación de los strings de todos los consumos
-  """
-  def __str__(self):
-    myString = ""
-    for i in self:
-      myString += str(i) + '\n'
-    return myString[:len(myString)-1]
-
-
 """
 Define una lista de consumos de un mismo producto
 
