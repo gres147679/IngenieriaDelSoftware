@@ -11,7 +11,6 @@ import database as db
 import dbparams
 import datetime
 
-
 def pedirFactura():
     
     if (pr.cantidadProductos() == 0):
@@ -28,13 +27,10 @@ def pedirFactura():
         if (not mc.existeCliente(idCliente)):
             print " El cliente no se encuentra en el sistema."
         else:   
-            if (mc.cantprodCliente(idCliente) == 0):
-                print " El cliente no posee productos en el sistema."
+            if (not verificarCliente(idCliente)):
+                print " El cliente no posee productos postpago en el sistema."
             else:
                 break  
-            
-    
-
     
     mc.listarProductos(idCliente)
     print "\nIntroduzca la informacion del producto."
@@ -62,6 +58,17 @@ def pedirFactura():
     
     return Factura(idCliente,numSerie)
     
+#
+# Verifica que un cliente se le pueda generar una factura
+# Para esto debe poseer al menos un producto postpago.
+#
+def verificarCliente(idCliente):    
+    conexion = db.operacion("Cuenta la cantidad de productos postpago que posee un cliente",
+    """SELECT count(*) FROM cliente, afilia, producto WHERE cliente.cedula = producto.cedula 
+    AND producto.numserie = afilia.numserie AND cliente.cedula = %s;""" % idCliente,
+                                dbparams.dbname,dbparams.dbuser,dbparams.dbpass)
+    
+    return (conexion.execute()[0][0] > 0)
     
 
 class Factura:
