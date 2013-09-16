@@ -13,6 +13,7 @@ import datetime
 
 
 def pedirFactura():
+    
     if (pr.cantidadProductos() == 0):
         print "No hay ningun producto en el sistema."
         print "No se puede generar una factura."
@@ -37,12 +38,24 @@ def pedirFactura():
     
     mc.listarProductos(idCliente)
     print "\nIntroduzca la informacion del producto."
+    
     while True:
         numSerie = validacion.validarInput(' Numero de Serie: ')        
         if (not mc.poseeprodCliente(idCliente,numSerie)):
-            print " El producto no corresponde a dicho cliente"
+            print " El producto no corresponde a dicho cliente."
+            continue
+            
+        conexion = db.operacion("Buscamos el codigo del plan asociado al producto",
+                                """SELECT * FROM afilia WHERE numserie = \'%s\'""" % numSerie,
+                                dbparams.dbname,dbparams.dbuser,dbparams.dbpass)
+        resultado = conexion.execute()
+        
+        if len(resultado) == 0:
+            print "Este producto no está afiliado a un plan postpago."
         else:
-            break 
+            break
+        
+            
         
     print "Se procedera a la generacion de la factura."
     
@@ -94,14 +107,13 @@ class Factura:
         return conexion.execute()
 
     def totalCobrar(self):
+        
         conexion = db.operacion("Buscamos el codigo del plan asociado al producto",
                                 """SELECT codplan FROM afilia WHERE numserie = \'%s\'""" % self.idProducto,
                                 dbparams.dbname,dbparams.dbuser,dbparams.dbpass)
         
         resultado = conexion.execute()
-        
-        if len(resultado) == 0:
-            print "No hay plan"
+    
 
         codplan = resultado[0][0]
 
@@ -208,7 +220,10 @@ class Factura:
         string += '\n\nTOTAL: ' + str(self.montoTotalCobrar)
         string += '\n=========================================================================================================='
         return string
+        
+        
 if __name__ == '__main__':
     
     factura = pedirFactura()
-    print factura
+    if factura.montoTotalCobrar != -1:
+        print factura

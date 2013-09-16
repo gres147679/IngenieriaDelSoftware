@@ -82,3 +82,7 @@
         DEFAULT,'CBZ27326',1003,current_date,20);
         insert into CONSUME values(
         DEFAULT,'CBZ27326',1003,current_date-60,20000);
+
+	insert into PRODUCTO values
+        ('123','iPhone 5','12345678',22714709);
+
