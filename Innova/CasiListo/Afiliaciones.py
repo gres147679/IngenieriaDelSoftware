@@ -78,7 +78,7 @@ class Afiliaciones:
             tipoplan = self.buscarPlan()
             
             # Si el plan no existe
-            if tipoplan != 'infinito' and tipoplan != 'paquete':
+            if tipoplan != 'prepago' and tipoplan != 'postpago':
                 raise Exception("No se pudo realizar la afiliacion. Favor verifique su plan")
 
             # Buscamos el producto que desea afiliarse en la base de datos
@@ -406,5 +406,5 @@ def verificarCliente(idCliente):
   
 ## Main de pruebas
 if __name__ == '__main__':
-    impPlanes()
-    impPaquetes()
+    af = Afiliaciones('CBZ27326', 3002)
+    af.CrearAfiliacion()
