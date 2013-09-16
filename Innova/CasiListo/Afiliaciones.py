@@ -9,6 +9,7 @@ import psycopg2.extras
 import unittest
 import database
 import dbparams
+
 ##*** Clase de Afiliaciones *************************************************
 
 class Afiliaciones:
@@ -64,6 +65,7 @@ class Afiliaciones:
             
             ## Si el plan no se consigue
             if len(resultado) == 0:
+                return 0
                 raise Exception("El plan introducido no existe en la base de datos.")
             
             ## Si se consigue el plan, se devuelve 
@@ -78,7 +80,7 @@ class Afiliaciones:
             tipoplan = self.buscarPlan()
             
             # Si el plan no existe
-            if tipoplan != 'prepago' and tipoplan != 'postpago':
+            if tipoplan == 0:
                 raise Exception("No se pudo realizar la afiliacion. Favor verifique su plan")
 
             # Buscamos el producto que desea afiliarse en la base de datos
@@ -112,7 +114,6 @@ class Afiliaciones:
      
 
             ## Si el plan es prepago
-            print tipoplan
             if tipoplan == 'prepago':
                 conexion.setComando("""INSERT INTO ACTIVA VALUES 
                 ('%s', %s, %s)"""%(self.producto, self.plan, 0))
@@ -222,7 +223,7 @@ con el paquete de codigo %s""")%(self.producto, self.plan)
             print '\nERROR: ', e
             
     ## Informa a que plan o planes esta afiliado un producto
-    def ConsultarPlanes(self):
+    def ConsultarPlanes (self):
         try:
             conexion = database.operacion("","""SELECT nombrepaq FROM CONTRATA 
             NATURAL JOIN PAQUETE WHERE numserie = '%s'"""%(self.producto),
@@ -268,93 +269,28 @@ con el paquete de codigo %s""")%(self.producto, self.plan)
     ## Elimina la afiliacion entre un producto y un paquete de servicios.
     def desafiliarContratacion(self):
         try:
-            conexion = database.operacion("","""SELECT codpaq, nombrepaq FROM
-            CONTRATA NATURAL JOIN PAQUETE WHERE numserie = '%s'
-            """%(self.producto),Afiliaciones.nombreBase,Afiliaciones.usuarioBase,
+            conexion = database.operacion("","""SELECT numserie, codpaq FROM 
+            CONTRATA WHERE codpaq = %s AND numserie = '%s'
+            """%(self.plan,self.producto),Afiliaciones.nombreBase,Afiliaciones.usuarioBase,
             Afiliaciones.passwordBase)
-
             resultado = conexion.execute()
-    
-            if len(resultado) != 0:
-                print "El producto esta asociado a los siguientes paquetes"
-
-                paquetes = {}
-
-                for row in resultado:
-                    codplan = str(row[0])
-                    paquetes[codplan] = row[1]
-                    print codplan + ' : ' + row[1]
-
-                entrada = ''
-
-                while not(paquetes.has_key(entrada)):
-                    entrada = str(raw_input("Por favor, introduzca el codigo del paquete que desea desafiliar\n"))
-
-                conexion.setComando("""DELETE FROM CONTRATA WHERE codpaq = %s
-                AND numserie = '%s'"""%(entrada,self.producto))
-                resultado = conexion.execute()
-                print ("""\nSe ha eliminado la contratacion del producto %s con el paquete %s exitosamente""")%(self.producto, entrada)
-
-                ## Cerramos y guardamos los cambios
-                conexion.conexion.commit()
-                conexion.cerrarConexion()
-
-            else:
-                print "El producto no tiene paquetes asociados\n"
+            
+            ## Si la contratacion no existe
+            if len(resultado) == 0:
+                raise Exception("El producto no esta afiliado al paquete introducido")
                 
+            ## En caso de que existiera, eliminamos la contratacion
+            conexion.setComando("""DELETE FROM CONTRATA WHERE codpaq = %s 
+            AND numserie = '%s'"""%(self.plan,self.producto))
+            resultado = conexion.execute()
+            print ('\nSe ha eliminado la contratacion del producto %s con el \
+paquete %s exitosamente')%(self.producto, self.plan)
+            
+            ## Cerramos y guardamos los cambios
+            conexion.conexion.commit()
+            conexion.cerrarConexion()
         except Exception, e:
             print '\nERROR: ', e
-
-# Consulta los planes postpago a los que esta suscrito un producto
-
-def ConsultarPlanesPostpago(codproducto):
-  try:
-      conexion = database.operacion("","""SELECT codplan FROM afilia WHERE numserie = '%s'""" %(codproducto),
-      Afiliaciones.nombreBase,Afiliaciones.usuarioBase,Afiliaciones.passwordBase)
-      resultado = conexion.execute()
-      
-      ## Guardamos los cambios y cerramos la base de datos
-      conexion.conexion.commit()
-      conexion.cerrarConexion()
-      return resultado
-      
-  # Capturamos los posibles errores.
-  except Exception, e:
-      print '\nERROR:', e
-      
-# Consulta los planes prepago a los que esta suscrito un producto
-      
-def ConsultarPlanesPrepago(codproducto):
-  try:
-      conexion = database.operacion("","""SELECT codplan from activa WHERE numserie = '%s'"""%(codproducto),
-      Afiliaciones.nombreBase,Afiliaciones.usuarioBase,Afiliaciones.passwordBase)
-      resultado = conexion.execute()
-      
-      ## Guardamos los cambios y cerramos la base de datos
-      conexion.conexion.commit()
-      conexion.cerrarConexion()
-      return resultado
-      
-  # Capturamos los posibles errores.
-  except Exception, e:
-      print '\nERROR:', e
-
-# Consulta los paquetes de servicios a los que esta suscrito un producto
-
-def ConsultarPaquetes(codproducto):
-  try:
-      conexion = database.operacion("","""SELECT codserv, cantidad, costo, nombreserv FROM contrata NATURAL JOIN contiene NATURAL JOIN servicio 
-			  WHERE numserie = \'%s\'""" % codproducto,
-      Afiliaciones.nombreBase,Afiliaciones.usuarioBase,Afiliaciones.passwordBase)
-      resultado = conexion.execute()
-      
-      ## Guardamos los cambios y cerramos la base de datos
-      #conexion.cerrarConexion()
-      return resultado
-      
-  # Capturamos los posibles errores.
-  except Exception, e:
-      print '\nERROR:', e
 
 def impPlanes():       
         conexion = database.operacion("",
@@ -391,20 +327,8 @@ def impPaquetes():
 
             for row in resultado:
                 print "{0:20} | {1:20} | {2:10}".format(row[0], row[1], row[2])
-
-#
-# Verifica que un cliente se le pueda generar una factura
-# Para esto debe poseer al menos un producto postpago.
-#
-def verificarCliente(idCliente):    
-    conexion = database.operacion("Cuenta la cantidad de productos postpago que posee un cliente",
-    """SELECT count(*) FROM cliente, afilia, producto WHERE cliente.cedula = producto.cedula 
-    AND producto.numserie = afilia.numserie AND cliente.cedula = %s;""" % idCliente,
-                                dbparams.dbname,dbparams.dbuser,dbparams.dbpass)
-    
-    return (conexion.execute()[0][0] > 0)
-  
+                
 ## Main de pruebas
 if __name__ == '__main__':
-    af = Afiliaciones('CBZ27326', 3002)
+    af = Afiliaciones('CBZ273asdasd26', 30302)
     af.CrearAfiliacion()
