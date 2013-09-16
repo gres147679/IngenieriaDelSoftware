@@ -305,51 +305,41 @@ con el paquete de codigo %s""")%(self.producto, self.plan)
         except Exception, e:
             print '\nERROR: ', e
 
-def impPlanyPaquetes(idProducto):
+def impPlanes():       
         conexion = database.operacion("",
-                                """SELECT * FROM producto WHERE numserie = \'%s\'""" % idProducto,
-                                dbparams.dbname,dbparams.dbuser,dbparams.dbpass)
-
-        if len(conexion.execute()) == 0:
-            raise Exception("El producto ingresado no existe en la base de datos")
-        
-        conexion = database.operacion("",
-                                """SELECT codplan FROM afilia WHERE numserie = \'%s\'""" % idProducto,
+                                """SELECT * FROM plan""",
                                 dbparams.dbname,dbparams.dbuser,dbparams.dbpass)
 
         resultado = conexion.execute()
 
         if len(resultado) == 0:
-            conexion = database.operacion("",
-                                    """SELECT codplan FROM activa WHERE numserie = \'%s\'""" % idProducto,
-                                    dbparams.dbname,dbparams.dbuser,dbparams.dbpass)
+            print "No hay planes almacenados en la base de datos"
 
-            resultado = conexion.execute()
+        else:
+            print "{0:50}PLANES".format(" ")
 
+            print "{0:15} | {1:20} | {2:50} | {3:15} | {4:10}".format("CODIGO DEL PLAN", "NOMBRE DEL PLAN", "DESCRIPCION","RENTA BASICA", "TIPO")
 
-        if len(resultado) ==0:
-            raise Exception("El producto ingresado no se encuentra afiliado a ningun plan")
+            for row in resultado:
+                print "{0:15} | {1:20} | {2:50} | {3:15} | {4:10}".format(row[0], row[1], row[2],row[3], row[5])
 
-
-        codplan = resultado[0][0]
-
+def impPaquetes():
         conexion = database.operacion("",
-                    """SELECT nombreplan FROM plan WHERE codplan = %s""" % codplan,
-                    dbparams.dbname,dbparams.dbuser,dbparams.dbpass)
+                                """SELECT * FROM paquete""",
+                                dbparams.dbname,dbparams.dbuser,dbparams.dbpass)
 
         resultado = conexion.execute()
 
-        print "El producto esta asociado al plan " + resultado[0][0]
+        if len(resultado) == 0:
+            print "No hay paquetes alamacenados en la base de datos"
 
-        conexion = database.operacion("","""select nombrepaq from contrata natural join paquete
-                                            where numserie = \'%s\'""" % idProducto,
-                                            dbparams.dbname,dbparams.dbuser,dbparams.dbpass)
+        else:
+            print "{0:25}PAQUETES".format(" ")
 
-        resultado = conexion.execute()
+            print "{0:20} | {1:20} | {2:10}".format("CODIGO DEL PAQUETE", "NOMBRE DEL PAQUETE", "PRECIO")
 
-        print "El producto esta asociado a los siquientes paquetes: "
-        for row in resultado:
-            print '     ' + row[0]
+            for row in resultado:
+                print "{0:20} | {1:20} | {2:10}".format(row[0], row[1], row[2])
 
 ## Main de pruebas
 if __name__ == '__main__':
@@ -363,6 +353,7 @@ if __name__ == '__main__':
     #Afiliacion.DesafiliarProducto()
     #Afiliacion = Afiliaciones('a1',1)
     #Afiliacion.ConsultarPlanes()
-    Afiliacion = Afiliaciones('CBZ27326',10)
-    Afiliacion.desafiliarContratacion()
-    #impPlanyPaquetes("sd")
+    #Afiliacion = Afiliaciones('CBZ27326',10)
+    #Afiliacion.desafiliarContratacion()
+    impPlanes()
+    impPaquetes()
