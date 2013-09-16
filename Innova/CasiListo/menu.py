@@ -192,9 +192,17 @@ def main():
                 op4 = int(validacion.validarNumero('Opcion: '))
                 if op4 == 1:
                     print "\n1.- Registrar un consumo."
+                    
+                    print "Mostrando todos los productos disponibles: "
+                    productos.listarProductos()
+            
                     consumos.crearConsumoInteractivo()
                 elif op4 == 2:     
-                    print "\n2.- Consultar consumos de un producto."       
+                    print "\n2.- Consultar consumos de un producto."   
+                    
+                    print "Mostrando todos los productos disponibles: "
+                    productos.listarProductos()
+                        
                     consumos.consumosProducto()
                 elif op4 == 3: 
                     print "\n3.- Regresar al menu anterior."
