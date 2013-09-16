@@ -70,7 +70,7 @@ def main():
                 elif op2 == 2:     
                     print "\n2.- Consultar un producto."
                     serie = productos.validarSerie()                    
-                    productos.obtenerProducto(serie)        
+                    print str(productos.obtenerProducto(serie))
                 elif op2 == 3: 
                     print "\n3.- Regresar al menu anterior."
                     flag2 = False

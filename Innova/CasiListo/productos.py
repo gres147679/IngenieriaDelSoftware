@@ -131,10 +131,13 @@ def obtenerProducto(nserie):
                 'Buscamos un cliente en la base de datos',
                 'SELECT * from PRODUCTO WHERE numserie = \'%s\';' % nserie,
                 dbparams.dbname,dbparams.dbuser,dbparams.dbpass
-            )
-            for row in conexiondb.execute():
+                )
+            resultado = conexiondb.execute()
+            for row in resultado:
                 producto = 'Producto: ' + str(row['nombreprod'])
                 producto += '\nNumero de Serie: ' + str(row['numserie'])
+        else:
+            print "El producto no existe"
     return producto
 #
 # Indica si un cliente se encuentra o no en la base de datos.

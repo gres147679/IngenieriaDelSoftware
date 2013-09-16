@@ -222,7 +222,7 @@ con el paquete de codigo %s""")%(self.producto, self.plan)
             print '\nERROR: ', e
             
     ## Informa a que plan o planes esta afiliado un producto
-    def ConsultarPlanesYPaquetesVerboso(self):
+    def ConsultarPlanes(self):
         try:
             conexion = database.operacion("","""SELECT nombrepaq FROM CONTRATA 
             NATURAL JOIN PAQUETE WHERE numserie = '%s'"""%(self.producto),
