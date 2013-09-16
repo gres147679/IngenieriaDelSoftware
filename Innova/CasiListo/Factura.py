@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import Afiliaciones
 import psycopg2
 import psycopg2.extras
 import unittest
@@ -27,7 +28,7 @@ def pedirFactura():
         if (not mc.existeCliente(idCliente)):
             print " El cliente no se encuentra en el sistema."
         else:   
-            if (not verificarCliente(idCliente)):
+            if (not Afiliaciones.verificarCliente(idCliente)):
                 print " El cliente no posee productos postpago en el sistema."
             else:
                 break  
@@ -40,13 +41,10 @@ def pedirFactura():
         if (not mc.poseeprodCliente(idCliente,numSerie)):
             print " El producto no corresponde a dicho cliente."
             continue
-            
-        conexion = db.operacion("Buscamos el codigo del plan asociado al producto",
-                                """SELECT * FROM afilia WHERE numserie = \'%s\'""" % numSerie,
-                                dbparams.dbname,dbparams.dbuser,dbparams.dbpass)
-        resultado = conexion.execute()
         
-        if len(resultado) == 0:
+        resultado = Afiliaciones.ConsultarPlanesPostpago(numSerie)
+        
+        if not resultado or len(resultado) == 0:
             print "Este producto no está afiliado a un plan postpago."
         else:
             break
@@ -57,18 +55,6 @@ def pedirFactura():
     
     
     return Factura(idCliente,numSerie)
-    
-#
-# Verifica que un cliente se le pueda generar una factura
-# Para esto debe poseer al menos un producto postpago.
-#
-def verificarCliente(idCliente):    
-    conexion = db.operacion("Cuenta la cantidad de productos postpago que posee un cliente",
-    """SELECT count(*) FROM cliente, afilia, producto WHERE cliente.cedula = producto.cedula 
-    AND producto.numserie = afilia.numserie AND cliente.cedula = %s;""" % idCliente,
-                                dbparams.dbname,dbparams.dbuser,dbparams.dbpass)
-    
-    return (conexion.execute()[0][0] > 0)
     
 
 class Factura:
@@ -83,17 +69,6 @@ class Factura:
         self.totalPlan = 0
         self.totalPaquete = 0
         self.montoTotalCobrar = self.totalCobrar()
-
-    def buscarCedula(self):
-        try:
-            conexion = db.operacion ("Buscamos la cedula del cliente",
-                                    """SELECT cl.cedula FROM producto AS pr, cliente as cl 
-                                       WHERE cl.cedula = pr.cedula AND numserie =\'%s\';""" %
-                                       self.idProducto, dbparams.dbname,dbparams.dbuser,dbparams.dbpass)
-            resultado = conexion.execute()
-            return str(resultado[0][0])
-        except Exception, e:
-            print "Error buscando la cedula del cliente", e
     
     def buscarMes(self):
         return str(raw_input("Por favor, introduzca el mes de facturacion (MM): "))
@@ -103,11 +78,7 @@ class Factura:
 
     def totalCobrar(self):
         
-        conexion = db.operacion("Buscamos el codigo del plan asociado al producto",
-                                """SELECT codplan FROM afilia WHERE numserie = \'%s\'""" % self.idProducto,
-                                dbparams.dbname,dbparams.dbuser,dbparams.dbpass)
-        
-        resultado = conexion.execute()
+        resultado = Afiliaciones.ConsultarPlanesPostpago(self.idProducto)
     
 
         codplan = resultado[0][0]
@@ -148,12 +119,9 @@ class Factura:
                 
         #Se busca si el producto este asociado a algun paquete. De estarlo, las cantidades de servicio ofrecidas se agregan al
         #diccionario de los servicios ofrecidos por el plan.
-        conexion = db.operacion("Paquetes a los que esta asociado un producto",
-                                """SELECT codserv, cantidad, costo, nombreserv FROM contrata NATURAL JOIN contiene NATURAL JOIN servicio 
-                                WHERE numserie = \'%s\'""" % self.idProducto,
-                                dbparams.dbname,dbparams.dbuser,dbparams.dbpass)
         
-        resultado = conexion.execute()
+        resultado = Afiliaciones.ConsultarPaquetes(self.idProducto)
+
         for row in resultado:
             codserv = row[0]
             if totalPlan.has_key(codserv):
@@ -163,6 +131,7 @@ class Factura:
         
         #Se busca el costo total de todos los paquetes a los que esta suscrito el producto. El resultado se almacena
         #en el total a cobrar.
+        
         conexion = db.operacion("Costo total de todos los paquetes",
                                 """SELECT sum(precio) FROM contrata NATURAL JOIN paquete 
                                 WHERE numserie = \'%s\' GROUP BY(contrata.numserie)""" % self.idProducto,
@@ -214,5 +183,5 @@ class Factura:
 if __name__ == '__main__':
     
     factura = pedirFactura()
-    if factura.montoTotalCobrar != -1:
+    if factura and factura.montoTotalCobrar != -1:
         print factura

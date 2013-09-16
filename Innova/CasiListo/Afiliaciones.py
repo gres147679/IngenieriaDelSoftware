@@ -222,7 +222,7 @@ con el paquete de codigo %s""")%(self.producto, self.plan)
             print '\nERROR: ', e
             
     ## Informa a que plan o planes esta afiliado un producto
-    def ConsultarPlanes (self):
+    def ConsultarPlanesYPaquetesVerboso(self):
         try:
             conexion = database.operacion("","""SELECT nombrepaq FROM CONTRATA 
             NATURAL JOIN PAQUETE WHERE numserie = '%s'"""%(self.producto),
@@ -305,6 +305,57 @@ con el paquete de codigo %s""")%(self.producto, self.plan)
         except Exception, e:
             print '\nERROR: ', e
 
+# Consulta los planes postpago a los que esta suscrito un producto
+
+def ConsultarPlanesPostpago(codproducto):
+  try:
+      conexion = database.operacion("","""SELECT codplan FROM afilia WHERE numserie = '%s'""" %(codproducto),
+      Afiliaciones.nombreBase,Afiliaciones.usuarioBase,Afiliaciones.passwordBase)
+      resultado = conexion.execute()
+      
+      ## Guardamos los cambios y cerramos la base de datos
+      conexion.conexion.commit()
+      conexion.cerrarConexion()
+      return resultado
+      
+  # Capturamos los posibles errores.
+  except Exception, e:
+      print '\nERROR:', e
+      
+# Consulta los planes prepago a los que esta suscrito un producto
+      
+def ConsultarPlanesPrepago(codproducto):
+  try:
+      conexion = database.operacion("","""SELECT codplan from activa WHERE numserie = '%s'"""%(codproducto),
+      Afiliaciones.nombreBase,Afiliaciones.usuarioBase,Afiliaciones.passwordBase)
+      resultado = conexion.execute()
+      
+      ## Guardamos los cambios y cerramos la base de datos
+      conexion.conexion.commit()
+      conexion.cerrarConexion()
+      return resultado
+      
+  # Capturamos los posibles errores.
+  except Exception, e:
+      print '\nERROR:', e
+
+# Consulta los paquetes de servicios a los que esta suscrito un producto
+
+def ConsultarPaquetes(codproducto):
+  try:
+      conexion = database.operacion("","""SELECT codserv, cantidad, costo, nombreserv FROM contrata NATURAL JOIN contiene NATURAL JOIN servicio 
+			  WHERE numserie = \'%s\'""" % codproducto,
+      Afiliaciones.nombreBase,Afiliaciones.usuarioBase,Afiliaciones.passwordBase)
+      resultado = conexion.execute()
+      
+      ## Guardamos los cambios y cerramos la base de datos
+      #conexion.cerrarConexion()
+      return resultado
+      
+  # Capturamos los posibles errores.
+  except Exception, e:
+      print '\nERROR:', e
+
 def impPlanes():       
         conexion = database.operacion("",
                                 """SELECT * FROM plan""",
@@ -341,6 +392,18 @@ def impPaquetes():
             for row in resultado:
                 print "{0:20} | {1:20} | {2:10}".format(row[0], row[1], row[2])
 
+#
+# Verifica que un cliente se le pueda generar una factura
+# Para esto debe poseer al menos un producto postpago.
+#
+def verificarCliente(idCliente):    
+    conexion = database.operacion("Cuenta la cantidad de productos postpago que posee un cliente",
+    """SELECT count(*) FROM cliente, afilia, producto WHERE cliente.cedula = producto.cedula 
+    AND producto.numserie = afilia.numserie AND cliente.cedula = %s;""" % idCliente,
+                                dbparams.dbname,dbparams.dbuser,dbparams.dbpass)
+    
+    return (conexion.execute()[0][0] > 0)
+  
 ## Main de pruebas
 if __name__ == '__main__':
     impPlanes()
