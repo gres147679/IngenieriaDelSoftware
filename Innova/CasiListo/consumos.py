@@ -11,6 +11,7 @@
 
 import psycopg2
 import database
+import consumos
 import dbparams
 import datetime
 import re
@@ -138,46 +139,79 @@ def crearConsumoInteractivo():
   miConsumo.sync()
   return miConsumo
 
+
 """
 Define una lista de consumos de un mismo producto
 
 Atributos:
   - Número de serie del producto
   - Inicio de la facturación
+  - Fín de la facturacion
+  - Lista de consumos
 """
-def consumosProducto():
+class facturacion:
   
-
-    print 'Inserte el código del equipo'
-    numserie = raw_input('-->')
-    while not existeEquipo(numserie):
-        print 'El código que ha insertado no corresponde con ningún equipo. Reintente'
-        print 'Inserte el código del equipo'
-        numserie = raw_input('-->')  
-      
+  """
+  Crea una facturacion
+  Parámetros:
+    -Número de serie del producto
+    -Inicio de la facturación: En formato DD/MM/YYYY
+    -Fín de la facturacion: En formato DD/MM/YYYY
+  """
+  def __init__(self,numserie,inicio,fin):
+    self.numSerieProducto = numserie
+    self.inicioFacturacion = inicio
+    self.finFacturacion = fin
+    self.listaConsumos = []
     
     # Conexión con la base de datos
-    conexiondb = database.operacion(
+    self.conexiondb = database.operacion(
       'Operacion que lista los consumos para un equipo en el rango dado',
-      '''select * from consume where numserie = \'%s\' 
-        order by fecha asc;''' % (numserie), 
+      '''select * from consume where numserie = \'%s\' and 
+      fecha >= to_date(\'%s\','DD/MM/YYYY') and 
+      fecha <= to_date(\'%s\','DD/MM/YYYY') order by fecha asc;''' 
+      % (self.numSerieProducto,self.inicioFacturacion,self.finFacturacion),
       dbparams.dbname,dbparams.dbuser,dbparams.dbpass
       )
-    result = conexiondb.execute()
-    
-    
+    result = self.conexiondb.execute()
     
     # Para cada tupla consumo, crea un consumo y agregalo a mi lista
     for i in result:
-        print consumo(numserie,i[2].strftime('%d/%m/%Y'),i[1],i[3])
-        
-    if len(result) == 0:
-        print "Este producto no posee ningun consumo."    
-        
-    conexiondb.cerrarConexion()
+      self.listaConsumos.append(
+	consumo(self.numSerieProducto,i[2].strftime('%d/%m/%Y'),i[1],i[3])
+      )
+    self.conexiondb.cerrarConexion()
   
+  """
+  Itera sobre la facturacion, iterando sobre la lista de consumos
+  """
+  def __iter__(self):
+    return self.listaConsumos.__iter__()
+  
+  """
+  Representación en string de la facturacion.
+  Se representa como la concatenación de los strings de todos los consumos
+  """
+  def __str__(self):
+    myString = ""
+    for i in self:
+      myString += str(i) + '\n'
+    return myString[:len(myString)-1]
+    
+    
+  def buscarConsumosporServicio(self):
+    conexion = database.operacion("Buscamos la suma de todos los consumos por servicio",
+                            """SELECT con.codserv, sum(con.cantidad) AS total FROM consume AS con 
+                            WHERE con.numserie = \'%s\' AND 
+                            to_char(con.fecha, 'MM YYYY') = \'%s\' GROUP BY (con.codserv)""" %
+                            (self.numSerieProducto, self.inicioFacturacion + " " + self.finFacturacion),
+                            dbparams.dbname,dbparams.dbuser,dbparams.dbpass)
+       
+    return conexion.execute()  
+    
     
 if __name__ == '__main__':
-
+  #a = facturacion('CBZ27326','30/04/2000','30/04/2015')
+  #print a
   print 'Esto no es un ejecutable. Es un módulo. MÓDULO!'
   

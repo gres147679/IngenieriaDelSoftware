@@ -343,17 +343,5 @@ def impPaquetes():
 
 ## Main de pruebas
 if __name__ == '__main__':
-    #Afiliacion = Afiliaciones('a1',1)
-    #plan = Afiliacion.buscarPlan()
-    #Afiliacion = Afiliaciones ('a1',8)
-    #Afiliacion.CrearAfiliacion()
-    #Afiliacion = Afiliaciones('a1',10)
-    #Afiliacion.CrearContratacion()
-    #Afiliacion = Afiliaciones('a1',2)
-    #Afiliacion.DesafiliarProducto()
-    #Afiliacion = Afiliaciones('a1',1)
-    #Afiliacion.ConsultarPlanes()
-    #Afiliacion = Afiliaciones('CBZ27326',10)
-    #Afiliacion.desafiliarContratacion()
     impPlanes()
     impPaquetes()

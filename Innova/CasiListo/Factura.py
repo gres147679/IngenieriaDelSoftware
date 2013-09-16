@@ -4,7 +4,7 @@ import psycopg2.extras
 import unittest
 import cliente as cl
 import moduloCliente as mc
-import consumos as con
+import consumos
 import productos as pr
 import validacion
 import database as db
@@ -78,7 +78,6 @@ class Factura:
         self.cliente = mc.busquedaCliente(idCliente)
         self.mesFacturacion = self.buscarMes()
         self.anioFacturacion = self.buscarAnio()
-        self.listaConsumos = self.buscarConsumos()
         self.listaCobrar = {}
         self.nombrePlan = ''
         self.totalPlan = 0
@@ -101,17 +100,6 @@ class Factura:
     
     def buscarAnio(self):
         return str(raw_input("Por favor, introduzca el año de facturacion (YYYY): "))
-
-    def buscarConsumos(self):
-        conexion = db.operacion("Buscamos todos los consumos asociados a un producto",
-                             """ SELECT to_char(con.fecha, 'DD MM YYYY'), serv.nombreserv, con.cantidad
-                                 FROM consume AS con, servicio AS serv 
-                                 WHERE con.numserie = \'%s\' AND to_char(con.fecha, 'MM')::integer = %s::integer
-                                 AND to_char(con.fecha, 'YYYY')::integer = %s::integer
-                                 AND serv.codserv = con.codserv""" % (self.idProducto, self.mesFacturacion, self.anioFacturacion),
-                                 dbparams.dbname,dbparams.dbuser,dbparams.dbpass)
-     
-        return conexion.execute()
 
     def totalCobrar(self):
         
@@ -136,14 +124,8 @@ class Factura:
         
         #Buscamos la suma de todos los consumos por servicio hechos por el producto en el año y mes introducidos por el usuario.
         #Lo guardamos en un diccionario donde la clave es el codigo del servicio.
-        conexion = db.operacion("Buscamos la suma de todos los consumos por servicio",
-                                """SELECT con.codserv, sum(con.cantidad) AS total FROM consume AS con 
-                                WHERE con.numserie = \'%s\' AND 
-                                to_char(con.fecha, 'MM YYYY') = \'%s\' GROUP BY (con.codserv)""" %
-                                (self.idProducto, self.mesFacturacion + " " + self.anioFacturacion),
-                                dbparams.dbname,dbparams.dbuser,dbparams.dbpass)
-       
-        resultado = conexion.execute()
+        listaConsumos = consumos.facturacion(self.idProducto,self.mesFacturacion,self.anioFacturacion)
+        resultado = listaConsumos.buscarConsumosporServicio()
         
         totalConsumido = {}
         for row in resultado:
