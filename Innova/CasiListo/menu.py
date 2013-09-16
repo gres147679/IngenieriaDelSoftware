@@ -8,7 +8,7 @@ import validacion
 import moduloCliente
 import productos
 import consumos
-import afiliaciones
+import Afiliaciones
 import Factura
 
 def main():
@@ -83,6 +83,10 @@ def main():
                 print "   4.- Regresar al menu anterior."     
                            
                 op3 = int(validacion.validarNumero('Opcion: '))
+                
+                print "Mostrando todos los productos disponibles: "
+                productos.listarProductos()
+                
                 if op3 == 1:
                     producto31 = productos.validarSerie()   
                     flag31 = True                                       
@@ -90,21 +94,30 @@ def main():
                     while flag31: 
                         print "\n1.- Afiliar un producto a un :"                   
                         print "   1.- Plan."
-                        print "   2.- Servicio."
+                        print "   2.- Paquete de Servicios."
                         print "   3.- Regresar."
                 
                         op31 = int(validacion.validarNumero('Opcion: '))
                         if op31 == 1:
+                            
                             print "\n1.- Plan."
-                            cod_plan = int(raw_input('Introduzca el codigo del plan: '))
-                            Afiliacion = afiliaciones.Afiliaciones(producto31,cod_plan)                            
+                            
+                            print "Mostrando todos los planes disponibles: "
+                            Afiliaciones.impPlanes()
+                            
+                            cod_plan = int(validacion.validarNumero('Introduzca el codigo del plan: '))
+                            Afiliacion = Afiliaciones.Afiliaciones(producto31,cod_plan)                            
                             Afiliacion.CrearAfiliacion()
                             flag31 = False
                             
                         elif op31 == 2:     
-                            print "\n2.- Servicio."
-                            cod_ser = int(raw_input('Introduzca el codigo del servicio: '))
-                            Afiliacion = afiliaciones.Afiliaciones(producto31,cod_ser)                            
+                            print "\n2.- Paquete de Servicios."
+                            
+                            print "Mostrando todos los paquetes de servicios disponibles: "
+                            Afiliaciones.impPaquetes()
+                            
+                            cod_ser = int(validacion.validarNumero('Introduzca el codigo del paquete de servicio: '))
+                            Afiliacion = Afiliaciones.Afiliaciones(producto31,cod_ser)                            
                             Afiliacion.CrearContratacion()
                             flag31 = False
                               
@@ -119,24 +132,32 @@ def main():
                 elif op3 == 2:     
                     
                     flag32 = True
-                    producto32 = productos.validarProducto()  
+                    producto32 = productos.validarSerie()  
                     while flag32:       
                         print "\n2.- Desafiliar un producto a un: ."             
                         print "   1.- Plan."
-                        print "   2.- Servicio."
+                        print "   2.- Paquete de Servicios."
                         print "   3.- Regresar."
                 
                         op32 = int(validacion.validarNumero('Opcion: '))
                         if op32 == 1:
                             print "\n1.- Plan."
-                            cod_plan = int(raw_input('Introduzca el codigo del plan: '))
-                            Afiliacion = afiliaciones.Afiliaciones(producto32,cod_plan)                            
+                            
+                            print "Mostrando todos los planes disponibles: "
+                            Afiliaciones.impPlanes()
+                            
+                            cod_plan = int(validacion.validarNumero('Introduzca el codigo del plan: '))
+                            Afiliacion = Afiliaciones.Afiliaciones(producto32,cod_plan)                            
                             Afiliacion.DesafiliarProducto()
                             
                         elif op32 == 2:     
-                            print "\n2.- Servicio."
-                            cod_ser = int(raw_input('Introduzca el codigo del servicio: '))
-                            Afiliacion = afiliaciones.Afiliaciones(producto32,cod_ser)                            
+                            print "\n2.- Paquete de Servicios."
+                            
+                            print "Mostrando todos los paquetes de servicios disponibles: "
+                            Afiliaciones.impPaquetes()
+                            
+                            cod_ser = int(validacion.validarNumero('Introduzca el codigo del paquete de servicio: '))
+                            Afiliacion = Afiliaciones.Afiliaciones(producto32,cod_ser)                            
                             Afiliacion.desafiliarContratacion()                          
                             
                         elif op32 == 3: 
@@ -148,8 +169,8 @@ def main():
                            
                 elif op3 == 3: 
                     print "\n3.- Consultar planes de un producto."
-                    producto33 = productos.validarProducto()
-                    Afiliacion = afiliaciones.Afiliaciones(producto33,1) 
+                    producto33 = productos.validarSerie()
+                    Afiliacion = Afiliaciones.Afiliaciones(producto33,1) 
                     Afiliacion.ConsultarPlanes()
 
                 elif op3 == 4: 

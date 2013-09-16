@@ -9,48 +9,49 @@ import dbparams
 def pedirProducto():
     print "Favor rellenar los datos pedidos a continuacion: \n"
     #Se piden los datos y se validan
-    numserie = validarSerie()
-    nombre = validarProducto()
+    numserie = nuevaSerie()
+    nombre = validacion.validarInput('Nombre del producto: ')
     rif = validarRIF()
     cedula = validarCedula()
     return(numserie,nombre,rif,cedula)
     
-#Validamos el numero de serie introducido por consola
+# Validamos la sere  de un producto introducido por consola
+# La serie debe pertenece a un producto en la BD
 def validarSerie():
-    #Numero de Serie (CLAVE)
-    while True:
-        numserie = validacion.validarInput('Numero de Serie: ')
-        print ("El numero de serie es: " + numserie + " ?\n")
-        respuesta = raw_input("Es correcto?: [s/n]   ")
-        if (respuesta.lower() != 'n'):
-            break
-        else:
-            continue
-    return numserie
-    
-#Validamos el nombre del producto introducido por consola
-def validarProducto():
     #Nombre del Producto
     while True:
-            nombre = validacion.validarInput('Nombre del Producto: ')
-            #Verifica que sea distinto de una cadena vacia
-            print ("El nombre de su producto es: " + nombre + " ?\n")
-            respuesta = raw_input("Es correcto?: [s/n]   ")
-            if (respuesta.lower() != 'n'):
-                break
-    return str(nombre)
+        numSerie = validacion.validarInput('Numero de Serie: ')
+        if (existeProducto(numSerie)):
+            break
+        else:
+            print "\n Error: No existe un producto con dicho numero de serie."
+            
+    return numSerie
+
+# Validamos la sere  de un producto introducido por consola
+# La serie no debe pertenece a un producto en la BD
+def nuevaSerie():
+    #Nombre del Producto
+    while True:
+        numSerie = validacion.validarInput('Numero de Serie: ')
+        if (not existeProducto(numSerie)):
+            break
+        else:
+            print "\n Error: Ya existe un producto con dicho numero de serie."
+            
+    return numSerie
+
     
 #Validamos el RIF  introducido por consola
 def validarRIF():
-    #RIF
-    rif = ''
+    
     while True:
-            x = int(validacion.validarNumero('RIF: '))
-            if (existeEmpresa(x)):
-                rif = str(x)
-                break
-            else:
-                print "\n Error: La empresa no existe"
+        x = int(validacion.validarNumero('RIF: '))
+        if (existeEmpresa(x)):
+            rif = str(x)
+            break
+        else:
+            print "\n Error: La empresa no existe"
     return rif
     
 #Validamos el numero de cedula introducido por consola
@@ -63,7 +64,7 @@ def validarCedula():
                 cedula = str(x)
                 break
             else:
-                print "\n Error: El cliente no existe"
+                print "\n Error: No existe un cliente con dicha cedula"
     return cedula
     
 # Funcion que nos permite agregar nuevos productos a la base de datos
@@ -153,12 +154,38 @@ def existeEmpresa(rif):
     dbparams.dbname,dbparams.dbuser,dbparams.dbpass
     )
     return (conexiondb.execute()[0][0] > 0)
-  
+
+#
+# Lista todos los productos en la BD
+#
+def listarProductos():
+    cant = cantidadProductos()
+    if (cant == 0):
+        print "No hay productos en la BD"
+        return False
+    else:
+        conexiondb = database.operacion(
+        'Operacion que lista todos los productos en la DB',
+        '''select * from producto ''',
+        dbparams.dbname,dbparams.dbuser,dbparams.dbpass
+        )
+        result = conexiondb.execute()
+        
+        for row in result:
+            writeRow = '  Numero de serie: ' + row['numserie']
+            writeRow+= ' | Nombre: ' + row['nombreprod'] 
+            writeRow+= ' | RIF: ' + str(row['rif']) 
+            writeRow+= ' | Cedula: ' + str(row['cedula'])
+            
+            print writeRow              
+        
+        return True  
     
       ##### MAIN #####
 if __name__ == "__main__":
   print 'Esto no es un ejecutable. Es un modulo. MODULO!'
-    # nuevoProducto()
+  listarProductos()
+  nuevoProducto()
     # #eliminarProducto('p4321')
     # print cantidadProductos()
     
