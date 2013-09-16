@@ -9,7 +9,6 @@ import psycopg2.extras
 import unittest
 import database
 import dbparams
-
 ##*** Clase de Afiliaciones *************************************************
 
 class Afiliaciones:
@@ -292,17 +291,64 @@ paquete %s exitosamente')%(self.producto, self.plan)
         except Exception, e:
             print '\nERROR: ', e
 
+def impPlanyPaquetes(idProducto):
+        conexion = database.operacion("",
+                                """SELECT * FROM producto WHERE numserie = \'%s\'""" % idProducto,
+                                dbparams.dbname,dbparams.dbuser,dbparams.dbpass)
+
+        if len(conexion.execute()) == 0:
+            raise Exception("El producto ingresado no existe en la base de datos")
+        
+        conexion = database.operacion("",
+                                """SELECT codplan FROM afilia WHERE numserie = \'%s\'""" % idProducto,
+                                dbparams.dbname,dbparams.dbuser,dbparams.dbpass)
+
+        resultado = conexion.execute()
+
+        if len(resultado) == 0:
+            conexion = database.operacion("",
+                                    """SELECT codplan FROM activa WHERE numserie = \'%s\'""" % idProducto,
+                                    dbparams.dbname,dbparams.dbuser,dbparams.dbpass)
+
+            resultado = conexion.execute()
+
+
+        if len(resultado) ==0:
+            raise Exception("El producto ingresado no se encuentra afiliado a ningun plan")
+
+
+        codplan = resultado[0][0]
+
+        conexion = database.operacion("",
+                    """SELECT nombreplan FROM plan WHERE codplan = %s""" % codplan,
+                    dbparams.dbname,dbparams.dbuser,dbparams.dbpass)
+
+        resultado = conexion.execute()
+
+        print "El producto esta asociado al plan " + resultado[0][0]
+
+        conexion = database.operacion("","""select nombrepaq from contrata natural join paquete
+                                            where numserie = \'%s\'""" % idProducto,
+                                            dbparams.dbname,dbparams.dbuser,dbparams.dbpass)
+
+        resultado = conexion.execute()
+
+        print "El producto esta asociado a los siquientes paquetes: "
+        for row in resultado:
+            print '     ' + row[0]
+
 ## Main de pruebas
 if __name__ == '__main__':
-    Afiliacion = Afiliaciones('a1',1)
-    plan = Afiliacion.buscarPlan()
-    Afiliacion = Afiliaciones ('a1',8)
-    Afiliacion.CrearAfiliacion()
-    Afiliacion = Afiliaciones('a1',10)
-    Afiliacion.CrearContratacion()
-    Afiliacion = Afiliaciones('a1',2)
-    Afiliacion.DesafiliarProducto()
-    Afiliacion = Afiliaciones('a1',1)
-    Afiliacion.ConsultarPlanes()
-    Afiliacion = Afiliaciones('a1',10)
-    Afiliacion.desafiliarContratacion()    
+    #Afiliacion = Afiliaciones('a1',1)
+    #plan = Afiliacion.buscarPlan()
+    #Afiliacion = Afiliaciones ('a1',8)
+    #Afiliacion.CrearAfiliacion()
+    #Afiliacion = Afiliaciones('a1',10)
+    #Afiliacion.CrearContratacion()
+    #Afiliacion = Afiliaciones('a1',2)
+    #Afiliacion.DesafiliarProducto()
+    #Afiliacion = Afiliaciones('a1',1)
+    #Afiliacion.ConsultarPlanes()
+    #Afiliacion = Afiliaciones('a1',10)
+    #Afiliacion.desafiliarContratacion()    
+    impPlanyPaquetes("sd")
