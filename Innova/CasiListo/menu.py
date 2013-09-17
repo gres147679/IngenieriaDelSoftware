@@ -169,7 +169,7 @@ def main():
                             flag32 = False
                         elif (op32 > 3 or op32 <= 0):
                             print "\nERROR: La opcion no es valida."
-                    producto32.cerrarConn()
+                            
                            
                 elif op3 == 3: 
                     print "\n3.- Consultar planes de un producto."
@@ -206,7 +206,6 @@ def main():
                     
                     print "Mostrando todos los productos disponibles: "
                     productos.listarProductos()
-                        
                     consumos.consumosProducto()
                 elif op4 == 3: 
                     print "\n3.- Regresar al menu anterior."

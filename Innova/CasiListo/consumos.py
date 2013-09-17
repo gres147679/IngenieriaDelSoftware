@@ -11,7 +11,6 @@
 
 import psycopg2
 import database
-import consumos
 import dbparams
 import datetime
 import re
@@ -139,6 +138,44 @@ def crearConsumoInteractivo():
   miConsumo.sync()
   return miConsumo
 
+
+"""
+Define una lista de todos los consumos de un mismo producto
+
+Atributos:
+  - Número de serie del producto
+  - Inicio de la facturación
+"""
+def consumosProducto():
+  
+
+    print 'Inserte el código del equipo'
+    numserie = raw_input('-->')
+    while not existeEquipo(numserie):
+        print 'El código que ha insertado no corresponde con ningún equipo. Reintente'
+        print 'Inserte el código del equipo'
+        numserie = raw_input('-->')  
+      
+    
+    # Conexión con la base de datos
+    conexiondb = database.operacion(
+      'Operacion que lista los consumos para un equipo en el rango dado',
+      '''select * from consume where numserie = \'%s\' 
+        order by fecha asc;''' % (numserie), 
+      dbparams.dbname,dbparams.dbuser,dbparams.dbpass
+      )
+    result = conexiondb.execute()
+    
+    
+    
+    # Para cada tupla consumo, crea un consumo y agregalo a mi lista
+    for i in result:
+        print consumo(numserie,i[2].strftime('%d/%m/%Y'),i[1],i[3])
+        
+    if len(result) == 0:
+        print "Este producto no posee ningun consumo."    
+        
+    conexiondb.cerrarConexion()
 
 """
 Define una lista de consumos de un mismo producto
