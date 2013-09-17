@@ -189,7 +189,8 @@ class Factura:
         string += '\n\nMonto a cobrar por el plan ' + self.nombrePlan + ': ' + str(self.totalPlan)
         string += '\nMonto a cobrar por los paquetes afiliados: ' + str(self.totalPaquete)
         string += '\n\nTOTAL: ' + str(self.montoTotalCobrar)
-        string += '\n=========================================================================================================='
+        string += '\n==========================================================================================================\n'
+        string += str(self.observaciones)
         return string
         
         
