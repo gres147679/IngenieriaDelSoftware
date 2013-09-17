@@ -69,7 +69,20 @@ class Factura:
         self.totalPlan = 0
         self.totalPaquete = 0
         self.montoTotalCobrar = self.totalCobrar()
+        self.observaciones = self.pedirObservaciones()
     
+    def pedirObservaciones(self):
+        
+        while True:
+            res = str(raw_input("Desea agregarle observaciones a la factura? [s/n]: "))
+            if res == "s":
+                return str(raw_input("Introduzca las observaciones:\n"))
+            else:
+                if res == "n":
+                    return ""
+                else:
+                    print "Opción inválida\n"
+        
     def buscarMes(self):
         return str(raw_input("Por favor, introduzca el mes de facturacion (MM): "))
     
