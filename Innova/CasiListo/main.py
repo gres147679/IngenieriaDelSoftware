@@ -224,10 +224,11 @@ def main():
                     print "\n1.- Generar la factura de un cliente."  
                     #Genera la factura
                     fact = Factura.pedirFactura()
-                    print fact.cliente
-                    for row in fact.listaConsumos:
-                        print row
-                    
+                    if fact:
+                      print fact.cliente
+                      for row in fact.listaConsumos:
+                          print row
+                   
                 elif op5 == 2: 
                     print "\n2.- Regresar al menu anterior."
                     flag5 = False
