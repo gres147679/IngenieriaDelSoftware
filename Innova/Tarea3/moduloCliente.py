@@ -62,7 +62,6 @@ def datosCliente():
 # Se registra un cliente.
 #
 def registroCliente():
-#         cursorRegistro = self.conexion.cursor(cursor_factory = psycopg2.extras.DictCursor)
             
     #Inserta el cliente introducido
     datos = datosCliente()
@@ -73,7 +72,6 @@ def registroCliente():
     dbparams.dbname,dbparams.dbuser,dbparams.dbpass
     )
    
-#         cursorRegistro.execute("INSERT INTO CLIENTE (cedula,nombrecl,direccion) VALUES (%s,%s,%s);",datos)
     conexiondb.execute()
     if conexiondb.insercionRechazada:
         print 'No se ha podido insertar el cliente'
@@ -127,6 +125,22 @@ def busquedaCliente(idCliente):
                 cl = cliente.cliente(row[0], row[1], row[2])
 
     return cl
+ 
+#
+# Indica si el cliente idCliente posee un producto serieProd
+#     
+def poseeprodCliente(idCliente,serieProd):
+    if (existeCliente(idCliente)):
+        conexiondb = database.operacion(
+        'Operacion que busca un cliente en la DB',
+        '''select count(*) from producto where cedula = \'%s\'
+           and numserie = \'%s\';''' % (idCliente,serieProd),
+        dbparams.dbname,dbparams.dbuser,dbparams.dbpass
+        )
+        return (conexiondb.execute()[0][0] > 0)
+    else:
+        return False
+ 
           
 #
 # Se busca un cliente, y retorna la cantidad de productos que haya comprado.
@@ -142,17 +156,73 @@ def cantprodCliente(idCliente):
         return conexiondb.execute()[0][0]
     else:
         return -1
+#
+# Lista los productos de un cliente
+# Retorna true si el cliente posee productos en la BD
+#
+def listarProductos(idCliente):
+    cant = cantprodCliente(idCliente)
+    if (cant == -1):
+        print "El cliente no se encuentra en la BD."
+        return False
+    elif (cant == 0):
+        print "El cliente no posee productos en la BD."
+        return False
+    else:
+        conexiondb = database.operacion(
+        'Operacion que lista los productos de un cliente en la DB',
+        '''select numserie,nombreprod,rif from producto where cedula = \'%s\';''' % idCliente,
+        dbparams.dbname,dbparams.dbuser,dbparams.dbpass
+        )
+        result = conexiondb.execute()
+        
+        print "El cliente cuya cedula es %s posee los siguientes productos: " % idCliente
+        for row in result:
+            writeRow = '  Numero de serie: ' + row['numserie']
+            writeRow+= ' | Nombre: ' + row['nombreprod'] 
+            writeRow+= ' | RIF: ' + str(row['rif']) 
+            
+            print writeRow              
+        
+        return True
 
-
+def listarClientes():
+    cant = numeroClientes()
+    if (cant == 0):
+        print "No hay clientes en la BD"
+        return False
+    else:
+        conexiondb = database.operacion(
+        'Operacion que lista todos los clientes en la DB',
+        '''select * from cliente ''',
+        dbparams.dbname,dbparams.dbuser,dbparams.dbpass
+        )
+        result = conexiondb.execute()
+        
+        for row in result:
+            writeRow = '  Cedula: ' + str(row['cedula'])
+            writeRow+= ' | Nombre: ' + row['nombrecl'] 
+            writeRow+= ' | Direccion: ' + row['direccion'] 
+            
+            print writeRow              
+        
+        return True  
 
 #MAIN DE PRUEBA        
-# if __name__== "__main__":
-#       
+if __name__== "__main__":
+    
+    cl = busquedaCliente(123)
+    listarProductos(22714709)
+    listarClientes()
+    print poseeprodCliente(1234,123)
+    
+    
+       
 #     print numeroClientes()
 #     print cantprodCliente(123)
 #      consultaClientes()
 #      registroCliente()
-#     
+#      
 #     cl = busquedaCliente(124)
 #     if cl!= None:
 #         print str(cl)

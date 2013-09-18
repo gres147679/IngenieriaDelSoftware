@@ -23,11 +23,12 @@ class database(object):
     
     def iniciarConexion(self):
         self.conexion = psycopg2.connect("dbname=%s user=%s password=%s"%(self.name,self.user,self.password))
-        #self.cursor = self.conexion.cursor(cursor_factory=psycopg2.extras.DictCursor);
-        self.cursor = self.conexion.cursor();
+        self.cursor = self.conexion.cursor(cursor_factory=psycopg2.extras.DictCursor);
+        #self.cursor = self.conexion.cursor();
     
     def cerrarConexion(self):
         self.cursor.close()
+        self.conexion.commit()
         self.conexion.close()
 
 # Clase que contempla una operacion a la Base de Datos. Es sensible a los códigos de error

@@ -1,171 +1,198 @@
 import psycopg2
 import sys
-import psycopg2.extras 
+import psycopg2.extras
+import validacion
+import database
+import dbparams 
  
-class Producto():
-    #Inicializamos la clase
-    def __init__(self):
-        # Colocamos las variables asi para mas rapido acceso y cambio posterior
-        self.dbname = 'software'
-        self.user = 'postgres'
-        self.password = '18588'
-        self.host = 'localhost'
-        
-        try:
-            #Hacemos el vinculo con la base de datos
-            self.conn = psycopg2.connect(host=self.host,dbname=self.dbname,user=self.user,password=self.password)
-            
-        except:
-            print "No se pudo conectar a la base de datos"
-            sys.exit()
-            
-    # Funcion para cerrar la conexion con la base de datos
-    def cerrarConn(self):
-        self.conn.close()
-        
-    # Funcion para pedir los datos del producto por consola    
-    def pedirProducto(self):
-        print "Favor rellenar los datos pedidos a continuacion: \n"
-        #Se piden los datos y se validan
-        numserie = self.validarSerie()
-        nombre = self.validarProducto()
-        rif = self.validarRIF()
-        cedula = self.validarCedula()
-        return(numserie,nombre,rif,cedula)
-        
-    #Validamos el numero de serie introducido por consola
-    def validarSerie(self):
-        #Numero de Serie (CLAVE)
-        while True:
-            while True:
-                numserie = raw_input('Numero de Serie: ')
-                #Verifica que sea distinto de una cadena vacia
-                if (numserie == ""):
-                    print "\n ERROR: Entrada no valida."
-                    continue
-                print ("El numero de serie es: " + numserie + " ?\n")
-                respuesta = raw_input("Es correcto?: [s/n]   ")
-                if (respuesta.lower() != 'n'):
-                    break
-                else:
-                    continue
+# Funcion para pedir los datos del producto por consola    
+def pedirProducto():
+    print "Favor rellenar los datos pedidos a continuacion: \n"
+    #Se piden los datos y se validan
+    numserie = nuevaSerie()
+    nombre = validacion.validarInput('Nombre del producto: ')
+    rif = validarRIF()
+    cedula = validarCedula()
+    return(numserie,nombre,rif,cedula)
+    
+# Validamos la sere  de un producto introducido por consola
+# La serie debe pertenece a un producto en la BD
+def validarSerie():
+    #Nombre del Producto
+    while True:
+        numSerie = validacion.validarInput('Numero de Serie: ')
+        if (existeProducto(numSerie)):
             break
-        return numserie
-        
-    #Validamos el nombre del producto introducido por consola
-    def validarProducto(self):
-        #Nombre del Producto
-        while True:
-            while True:
-                nombre = raw_input('Nombre del Producto: ')
-                #Verifica que sea distinto de una cadena vacia
-                if (nombre == ""):
-                    print "\n ERROR: Entrada no valida."
-                    continue
-                print ("El nombre de su producto es: " + nombre + " ?\n")
-                respuesta = raw_input("Es correcto?: [s/n]   ")
-                if (respuesta.lower() != 'n'):
-                    break
-                
-            break 
-        return nombre
-        
-    #Validamos el RIF  introducido por consola
-    def validarRIF(self):
-        #RIF
-        while True:
-            try:
-                y = int(raw_input('RIF: '))
-            except ValueError:
-                print "/n ERROR: Se debe ingresar un numero entero \n"
-            else:
-                if (y <= 0):
-                    print "\n ERROR: El numero debe ser positivo\n"
-                rif = str(y)
-                break
-        return rif
-        
-    #Validamos el numero de cedula introducido por consola
-    def validarCedula(self):
-        #Cedula
-        while True:
-            try:
-                x = int(raw_input('cedula: '))
-            except ValueError:
-                print "/n ERROR: Se debe ingresar un numero entero \n"
-            else:
-                if (x <= 0):
-                    print "\n ERROR: El numero debe ser positivo\n"
+        else:
+            print "\n Error: No existe un producto con dicho numero de serie."
+            
+    return numSerie
+
+# Validamos la sere  de un producto introducido por consola
+# La serie no debe pertenece a un producto en la BD
+def nuevaSerie():
+    #Nombre del Producto
+    while True:
+        numSerie = validacion.validarInput('Numero de Serie: ')
+        if (not existeProducto(numSerie)):
+            break
+        else:
+            print "\n Error: Ya existe un producto con dicho numero de serie."
+            
+    return numSerie
+
+    
+#Validamos el RIF  introducido por consola
+def validarRIF():
+    
+    while True:
+        x = int(validacion.validarNumero('RIF: '))
+        if (existeEmpresa(x)):
+            rif = str(x)
+            break
+        else:
+            print "\n Error: La empresa no existe"
+    return rif
+    
+#Validamos el numero de cedula introducido por consola
+def validarCedula():
+    #Cedula
+    cedula = ''
+    while True:
+            x = int(validacion.validarNumero('cedula: '))
+            if (existeCliente(x)):
                 cedula = str(x)
                 break
-        return cedula
-        
-    # Funcion que nos permite agregar nuevos productos a la base de datos
-    def nuevoProducto(self):
-        cursor = self.conn.cursor(cursor_factory = psycopg2.extras.DictCursor)
-        
-        producto = self.pedirProducto()
-        #El excute se hace de una con el paso de parametros para evitar el SQL Inyection
-        cursor.execute("INSERT INTO PRODUCTO (numserie,nombreprod,RIF,cedula) VALUES (%s,%s,%s,%s);",producto)
-        print ("Se ha agregado el producto con los siguientes valores %s %s %s %s \n" % producto)
-        #Se usa el commit para guardar los cambios realizados en la base de datos
-        self.conn.commit()
-        cursor.close()
-        
-    # Funcion que elimina un producto de la base de datos.Recibe de parametro de entrada el numero de serie
-    # del producto a eliminar
-    def eliminarProducto(self,nserie):
-        cursor = self.conn.cursor(cursor_factory = psycopg2.extras.DictCursor)
-        cursor.execute("DELETE FROM PRODUCTO WHERE numserie=%(nserie)s",{'nserie' : nserie})
-        self.conn.commit()
-        cursor.close()
-        
-    # Verifica la cantidad de productos agregados a la base de datos    
-    def cantidadProductos (self):
-        cursor = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-        cursor.execute("SELECT COUNT(*) FROM PRODUCTO")
-        x=cursor.fetchone()
-        resultado = x[0]
-        cursor.close()
-        #print resultado
-        return (resultado)
-        
-    # Funcion que nos permite saber si un producto existe en la base de datos
-    # Recibe de entrada el numero de serie del producto a buscar
-    def buscarProducto(self,nserie):
-        cursor = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-        cursor.execute("SELECT COUNT(*) FROM PRODUCTO WHERE numserie = %(nserie)s",{'nserie' : nserie})
-        x=cursor.fetchone()
-        resultado = x[0]
-        cursor.close()
-        return (resultado > 0)
-    # Funcion que nos devuelve el producto buscado.
-    # Recibe de entrada el numero de serie del producto en cuestion.
+            else:
+                print "\n Error: No existe un cliente con dicha cedula"
+    return cedula
     
-    def obtenerProducto(self,nserie):
-        cursor = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)  
-        producto = None
-        if (self.cantidadProductos() == 0):
-            print "\n Error: La base de datos esta vacia"
-        else:
-            if (self.buscarProducto(nserie)):
-                cursor.execute("SELECT * from PRODUCTO WHERE numserie = %(nserie)s",{'nserie' : nserie})
-                for row in cursor.fetchall():
-                    writeRow = 'Numero de Serie: ' + str(row['numserie'])
-                    writeRow += ' Nombre: ' + str(row['nombreprod'])
-                    writeRow += ' RIF: ' + str(row['rif'])
-                    writeRow += ' Cedula: ' + str(row['cedula'])
-                    print writeRow
-        return writeRow
-        
-      ##### MAIN #####
-#if __name__ == "__main__":
+# Funcion que nos permite agregar nuevos productos a la base de datos
+def nuevoProducto():
+    producto = pedirProducto()
+    conexiondb = database.operacion(
+        'Se inserta el producto a la base de datos',
+        'insert into producto values (\'%s\',\'%s\',\'%s\',\'%s\');' % producto,
+        dbparams.dbname,dbparams.dbuser,dbparams.dbpass
+    )
+    conexiondb.execute()
+    if conexiondb.insercionRechazada:
+        print 'No se ha podido insertar el producto'
+    else:
+        print "El producto se ha registrado exitosamente."     
 
-#    producto2 = Producto()
-    #producto2.pedirProducto()
-    #producto2.eliminarProducto('123')
-#    print producto2.cantidadProductos()
-#    print producto2.buscarProducto('p1223')
-#    producto2.obtenerProducto('p123')
+    conexiondb.cerrarConexion()
+    
+# Funcion que elimina un producto de la base de datos.Recibe de parametro de entrada el numero de serie
+# del producto a eliminar
+def eliminarProducto(nserie):
+    conexiondb =  database.operacion(
+        'Eliminamos un producto',
+        'delete from producto where numserie=\'%s\';' % nserie,
+        dbparams.dbname,dbparams.dbuser,dbparams.dbpass)
+    conexiondb.execute()
+    if conexiondb.insercionRechazada:
+        print 'No se ha podido eliminar el producto'
+    else:
+        print "El producto se ha eliminado exitosamente."     
+
+    conexiondb.cerrarConexion()
+    
+# Verifica la cantidad de productos agregados a la base de datos    
+def cantidadProductos ():
+
+    conexiondb = database.operacion(
+    'Contamos la cantidad de Productos en la Base de Datos',
+    'SELECT COUNT(*) FROM PRODUCTO;',
+    dbparams.dbname,dbparams.dbuser,dbparams.dbpass)
+    return conexiondb.execute()[0][0]
+    
+# Funcion que nos permite saber si un producto existe en la base de datos
+# Recibe de entrada el numero de serie del producto a buscar
+def existeProducto(nserie):
+
+    conexiondb = database.operacion(
+    'Operacion que busca un producto en la base de datos',
+    'SELECT COUNT(*) FROM PRODUCTO WHERE numserie=\'%s\';' % nserie,
+    dbparams.dbname,dbparams.dbuser,dbparams.dbpass
+    )
+    return (conexiondb.execute()[0][0] > 0)
+    
+# Funcion que nos devuelve el producto buscado.
+# Recibe de entrada el numero de serie del producto en cuestion.
+# En caso de no ser encontrado devuelve None
+def obtenerProducto(nserie):
+    producto = None
+    if (cantidadProductos() == 0):
+        print "\n Error: La base de datos esta vacia"
+    else:
+        if (existeProducto(nserie)):
+            conexiondb = database.operacion(
+                'Buscamos un cliente en la base de datos',
+                'SELECT * from PRODUCTO WHERE numserie = \'%s\';' % nserie,
+                dbparams.dbname,dbparams.dbuser,dbparams.dbpass
+                )
+            resultado = conexiondb.execute()
+            for row in resultado:
+                producto = 'Producto: ' + str(row['nombreprod'])
+                producto += '\nNumero de Serie: ' + str(row['numserie'])
+        else:
+            print "El producto no existe"
+    return producto
+#
+# Indica si un cliente se encuentra o no en la base de datos.
+# 
+def existeCliente(idCliente):
+    conexiondb = database.operacion(
+    'Operacion que busca un cliente en la DB',
+    'select count(*) from cliente where cedula=\'%s\';'  % idCliente,
+    dbparams.dbname,dbparams.dbuser,dbparams.dbpass
+    )
+    return (conexiondb.execute()[0][0] > 0)
+    
+def existeEmpresa(rif):
+    conexiondb = database.operacion(
+    'Operacion que busca una empresa en la DB',
+    'select count(*) from empresa where rif= %s ;'  % rif,
+    dbparams.dbname,dbparams.dbuser,dbparams.dbpass
+    )
+    return (conexiondb.execute()[0][0] > 0)
+
+#
+# Lista todos los productos en la BD
+#
+def listarProductos():
+    cant = cantidadProductos()
+    if (cant == 0):
+        print "No hay productos en la BD"
+        return False
+    else:
+        conexiondb = database.operacion(
+        'Operacion que lista todos los productos en la DB',
+        '''select * from producto ''',
+        dbparams.dbname,dbparams.dbuser,dbparams.dbpass
+        )
+        result = conexiondb.execute()
+        
+        for row in result:
+            writeRow = '  Numero de serie: ' + row['numserie']
+            writeRow+= ' | Nombre: ' + row['nombreprod'] 
+            writeRow+= ' | RIF: ' + str(row['rif']) 
+            writeRow+= ' | Cedula: ' + str(row['cedula'])
+            
+            print writeRow              
+        
+        return True  
+    
+      ##### MAIN #####
+if __name__ == "__main__":
+  print 'Esto no es un ejecutable. Es un modulo. MODULO!'
+  listarProductos()
+  nuevoProducto()
+    # #eliminarProducto('p4321')
+    # print cantidadProductos()
+    
+    # print existeProducto('p1223')
+    # obtenerProducto('p123')
     
     #### END MAIN ####

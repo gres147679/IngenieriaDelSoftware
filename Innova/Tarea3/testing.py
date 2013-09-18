@@ -18,7 +18,7 @@ import Factura
 # del periodo de facturacion, para verificar bien
 # que se revisen las fechas
 
-class query3Test(unittest.TestCase):
+class FacturaTest(unittest.TestCase):
     # Parametros de conexion de la base de datos
     dbname = dbparams.dbname
     dbuser = dbparams.dbuser
@@ -29,6 +29,7 @@ class query3Test(unittest.TestCase):
         self.myConsult = database.operacion(
         "Inserts de prueba para probar la factura",
         None,self.dbname,self.dbuser,self.dbpass)
+        
 
     def tearDown(self):
         self.myConsult.setComando("""
@@ -38,7 +39,10 @@ class query3Test(unittest.TestCase):
         delete from plan_postpago cascade;
         delete from plan_prepago cascade;
         delete from plan cascade;
+        delete from contiene cascade;
         delete from servicio cascade;
+        delete from contrata cascade;
+        delete from paquete cascade;
         delete from producto cascade;
         delete from cliente cascade;
         delete from empresa cascade;
@@ -72,15 +76,15 @@ class query3Test(unittest.TestCase):
         insert into AFILIA values
         ('CBZ27326',3002,'paquete');
         
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1001,current_date-45,50);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1001,current_timestamp - interval '45 days',50);
         
         commit;""")
 	
 	self.myConsult.execute()
-	testBill = Factura.Factura("CBZ27326")
+	testBill = Factura.Factura(22714709,"CBZ27326")
         result = testBill.totalCobrar()
-        theoreticResult = 0
+        theoreticResult = 211
         try:
           self.assertEqual(result,theoreticResult,"Error en la prueba 1: Se esperaba %d y se recibio %d" % (theoreticResult,result));
         except AssertionError,e:
@@ -118,17 +122,17 @@ class query3Test(unittest.TestCase):
         insert into AFILIA values
         ('CBZ27326',3002,'paquete');
         
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1001,current_date,50);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1001,current_timestamp,50);
         
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1001,current_date-45,51);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1001,current_timestamp - interval '45 days',51);
         
         
         commit;""")
         
         self.myConsult.execute()
-	testBill = Factura.Factura("CBZ27326")
+	testBill = Factura.Factura(22714709,"CBZ27326")
         result = testBill.totalCobrar()
         theoreticResult = 211
         try:
@@ -146,7 +150,7 @@ class query3Test(unittest.TestCase):
     ## retornar el valor de la renta básica del plan. Esta vez se inserta un consumo en
     ## una fecha futura, para asegurarse del checkeo de fechas
     
-    def test_unConsumoConAfiliacion(self):
+    def test_unConsumoConAfiliacionNulo(self):
         self.myConsult.setComando("""
         insert into EMPRESA values
         (12345678,'MOCEL');
@@ -170,20 +174,20 @@ class query3Test(unittest.TestCase):
         insert into AFILIA values
         ('CBZ27326',3002,'paquete');
         
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1001,current_date,50);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1001,current_timestamp,50);
         
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1001,current_date-45,51);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1001,current_timestamp - interval '45 days',51);
         
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1001,current_date+60,51);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1001,current_timestamp + interval '60 days',51);
         
         
         commit;""")
         
         self.myConsult.execute()
-	testBill = Factura.Factura("CBZ27326")
+	testBill = Factura.Factura(22714709,"CBZ27326")
         result = testBill.totalCobrar()
         theoreticResult = 211
         try:
@@ -223,17 +227,17 @@ class query3Test(unittest.TestCase):
         insert into AFILIA values
         ('CBZ27326',3002,'paquete');
         
-        insert into CONSUME values(
-        DEFAULT, 'CBZ27326',1001,current_date,120);
+        insert into CONSUME values(DEFAULT,
+         'CBZ27326',1001,current_timestamp,120);
         
-        insert into CONSUME values(
-        DEFAULT, 'CBZ27326',1001,current_date-45,120);
+        insert into CONSUME values(DEFAULT,
+         'CBZ27326',1001,current_timestamp - interval '45 days',120);
         
         
         commit;""")
         
         self.myConsult.execute()
-	testBill = Factura.Factura("CBZ27326")
+	testBill = Factura.Factura(22714709,"CBZ27326")
         result = testBill.totalCobrar()
         
         # El valor de la deuda debe ser 211 + 0.1*(120-100) = 213
@@ -278,28 +282,28 @@ class query3Test(unittest.TestCase):
         insert into AFILIA values
         ('CBZ27326',3002,'paquete');
         
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1001,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1001,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1001,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1001,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1001,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1001,current_date,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1001,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1001,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1001,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1001,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1001,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1001,current_timestamp,20);
         
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1001,current_date-45,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1001,current_timestamp - interval '45 days',20);
         
         commit;""")
         
         
         
         self.myConsult.execute()
-	testBill = Factura.Factura("CBZ27326")
+	testBill = Factura.Factura(22714709,"CBZ27326")
         result = testBill.totalCobrar()
         
         # El valor de la deuda debe ser 211 + 0.1*(120-100) = 213
@@ -319,7 +323,7 @@ class query3Test(unittest.TestCase):
     ## que los contiene: en un caso la cantidad consumida esta cubierta, y en el otro
     ## no. En ambos casos hay una cantidad variable de consumos pequeños
     
-    def test_variosConsumosConAfiliacionYExcesosMultiples(self):
+    def test_variosConsumosConAfiliacionYExcesosMultiples1(self):
         self.myConsult.setComando("""
         insert into EMPRESA values
         (12345678,'MOCEL');
@@ -349,42 +353,42 @@ class query3Test(unittest.TestCase):
         insert into AFILIA values
         ('CBZ27326',3002,'paquete');
         
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1001,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1001,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1001,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1001,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1001,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1001,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1001,current_date-60,20000);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1001,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1001,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1001,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1001,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1001,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1001,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1001,current_timestamp - interval '60 days',20000);
         
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1002,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1002,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1002,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1002,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1002,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1002,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1001,current_date-60,20000);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1002,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1002,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1002,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1002,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1002,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1002,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1001,current_timestamp + interval '60 days',20000);
         
         commit;""")
         
         
         
         self.myConsult.execute()
-	testBill = Factura.Factura("CBZ27326")
+	testBill = Factura.Factura(22714709,"CBZ27326")
         result = testBill.totalCobrar()
         
         # El valor de la deuda debe ser 211 + 0.2*(120-100) = 215
@@ -405,7 +409,7 @@ class query3Test(unittest.TestCase):
     ## no. En el tercer caso el cliente esta afiliado a un paquete que contiene dicho plan, y 
     ## los consumos estan cubiertos. En todo caso hay una cantidad variable de consumos pequeños
     
-    def test_variosConsumosConAfiliacionYExcesosMultiples(self):
+    def test_variosConsumosConAfiliacionYExcesosMultiples2(self):
         self.myConsult.setComando("""
         insert into EMPRESA values
         (12345678,'MOCEL');
@@ -447,57 +451,57 @@ class query3Test(unittest.TestCase):
         insert into CONTRATA values
         ('CBZ27326',4001);
         
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1001,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1001,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1001,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1001,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1001,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1001,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1001,current_date-60,20000);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1001,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1001,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1001,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1001,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1001,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1001,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1001,current_timestamp - interval '60 days',20000);
         
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1002,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1002,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1002,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1002,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1002,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1002,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1001,current_date-60,20000);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1002,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1002,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1002,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1002,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1002,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1002,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1001,current_timestamp - interval '45 days',20000);
         
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1003,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1003,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1003,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1003,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1003,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1003,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1003,current_date-60,20000);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1003,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1003,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1003,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1003,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1003,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1003,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1003,current_timestamp - interval '45 days',20000);
         
         commit;""")
         
         
         
         self.myConsult.execute()
-	testBill = Factura.Factura("CBZ27326")
+	testBill = Factura.Factura(22714709,"CBZ27326")
         result = testBill.totalCobrar()
         
         # El valor de la deuda debe ser 211 + 0.2*(120-100) + 100 = 315
@@ -518,7 +522,7 @@ class query3Test(unittest.TestCase):
     ## no. En el tercer caso el cliente esta afiliado a un paquete que contiene dicho plan, y 
     ## los consumos no estan enteramente cubiertos. En todo caso hay una cantidad variable de consumos pequeños
     
-    def test_variosConsumosConAfiliacionYExcesosMultiples(self):
+    def test_variosConsumosConAfiliacionYExcesosMultiples3(self):
         self.myConsult.setComando("""
         insert into EMPRESA values
         (12345678,'MOCEL');
@@ -560,57 +564,57 @@ class query3Test(unittest.TestCase):
         insert into CONTRATA values
         ('CBZ27326',4001);
         
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1001,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1001,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1001,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1001,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1001,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1001,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1001,current_date-60,20000);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1001,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1001,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1001,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1001,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1001,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1001,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1001,current_timestamp - interval '45 days',20000);
         
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1002,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1002,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1002,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1002,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1002,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1002,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1001,current_date-60,20000);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1002,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1002,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1002,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1002,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1002,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1002,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1001,current_timestamp - interval '45 days',20000);
         
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1003,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1003,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1003,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1003,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1003,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1003,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1003,current_date-60,20000);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1003,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1003,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1003,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1003,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1003,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1003,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1003,current_timestamp - interval '45 days',20000);
         
         commit;""")
         
         
         
         self.myConsult.execute()
-	testBill = Factura.Factura("CBZ27326")
+	testBill = Factura.Factura(22714709,"CBZ27326")
         result = testBill.totalCobrar()
         
         # El valor de la deuda debe ser 211 + 0.2*(120-100) + 100 + 0.5(120-100) = 325

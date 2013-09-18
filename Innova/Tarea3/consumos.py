@@ -11,7 +11,6 @@
 
 import psycopg2
 import database
-import consumos
 import dbparams
 import datetime
 import re
@@ -52,7 +51,7 @@ class consumo:
     # Conexión con la base de datos
     self.conexiondb = database.operacion(
       'Operacion que inserta un consumo en la DB',
-      'insert into consume values (\'%s\',%s,\'%s\',%s);' 
+      'insert into consume values (DEFAULT,\'%s\',%s,\'%s\',%s);' 
       % (self.numserie,self.codservicio,self.fecha,self.cantidad),
       dbparams.dbname,dbparams.dbuser,dbparams.dbpass
       )
@@ -141,6 +140,44 @@ def crearConsumoInteractivo():
 
 
 """
+Define una lista de todos los consumos de un mismo producto
+
+Atributos:
+  - Número de serie del producto
+  - Inicio de la facturación
+"""
+def consumosProducto():
+  
+
+    print 'Inserte el código del equipo'
+    numserie = raw_input('-->')
+    while not existeEquipo(numserie):
+        print 'El código que ha insertado no corresponde con ningún equipo. Reintente'
+        print 'Inserte el código del equipo'
+        numserie = raw_input('-->')  
+      
+    
+    # Conexión con la base de datos
+    conexiondb = database.operacion(
+      'Operacion que lista los consumos para un equipo en el rango dado',
+      '''select * from consume where numserie = \'%s\' 
+        order by fecha asc;''' % (numserie), 
+      dbparams.dbname,dbparams.dbuser,dbparams.dbpass
+      )
+    result = conexiondb.execute()
+    
+    
+    
+    # Para cada tupla consumo, crea un consumo y agregalo a mi lista
+    for i in result:
+        print consumo(numserie,i[3].strftime('%d/%m/%Y'),i[2],i[4])
+        
+    if len(result) == 0:
+        print "Este producto no posee ningun consumo."    
+        
+    conexiondb.cerrarConexion()
+
+"""
 Define una lista de consumos de un mismo producto
 
 Atributos:
@@ -178,7 +215,7 @@ class facturacion:
     # Para cada tupla consumo, crea un consumo y agregalo a mi lista
     for i in result:
       self.listaConsumos.append(
-	consumo(self.numSerieProducto,i[2].strftime('%d/%m/%Y'),i[1],i[3])
+	consumo(self.numSerieProducto,i[3].strftime('%d/%m/%Y'),i[2],i[4])
       )
     self.conexiondb.cerrarConexion()
   
@@ -197,6 +234,18 @@ class facturacion:
     for i in self:
       myString += str(i) + '\n'
     return myString[:len(myString)-1]
+    
+    
+  def buscarConsumosporServicio(self):
+    conexion = database.operacion("Buscamos la suma de todos los consumos por servicio",
+                            """SELECT con.codserv, sum(con.cantidad) AS total FROM consume AS con 
+                            WHERE con.numserie = \'%s\' AND 
+                            to_char(con.fecha, 'MM YYYY') = \'%s\' GROUP BY (con.codserv)""" %
+                            (self.numSerieProducto, self.inicioFacturacion + " " + self.finFacturacion),
+                            dbparams.dbname,dbparams.dbuser,dbparams.dbpass)
+       
+    return conexion.execute()  
+    
     
 if __name__ == '__main__':
   #a = facturacion('CBZ27326','30/04/2000','30/04/2015')

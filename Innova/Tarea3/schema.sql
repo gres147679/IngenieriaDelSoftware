@@ -90,7 +90,7 @@ CREATE TABLE CONSUME (
   consumo_pkey  SERIAL          primary key,
   numserie      varchar(20)     references PRODUCTO(numserie),
   codserv       integer         references SERVICIO(codserv),
-  fecha         date            NOT NULL,
+  fecha         timestamp            NOT NULL,
   cantidad      int             NOT NULL,
   CONSTRAINT cantidadConsumePositiva CHECK (cantidad > 0)
 );
