@@ -225,9 +225,7 @@ def main():
                     #Genera la factura
                     fact = Factura.pedirFactura()
                     if fact:
-                      print fact.cliente
-                      for row in fact.listaConsumos:
-                          print row
+		      print fact
                    
                 elif op5 == 2: 
                     print "\n2.- Regresar al menu anterior."

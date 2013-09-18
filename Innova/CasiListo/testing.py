@@ -76,8 +76,8 @@ class FacturaTest(unittest.TestCase):
         insert into AFILIA values
         ('CBZ27326',3002,'paquete');
         
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1001,current_date-45,50);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1001,current_timestamp - interval '45 days',50);
         
         commit;""")
 	
@@ -122,11 +122,11 @@ class FacturaTest(unittest.TestCase):
         insert into AFILIA values
         ('CBZ27326',3002,'paquete');
         
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1001,current_date,50);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1001,current_timestamp,50);
         
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1001,current_date-45,51);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1001,current_timestamp - interval '45 days',51);
         
         
         commit;""")
@@ -174,14 +174,14 @@ class FacturaTest(unittest.TestCase):
         insert into AFILIA values
         ('CBZ27326',3002,'paquete');
         
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1001,current_date,50);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1001,current_timestamp,50);
         
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1001,current_date-45,51);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1001,current_timestamp - interval '45 days',51);
         
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1001,current_date+60,51);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1001,current_timestamp + interval '60 days',51);
         
         
         commit;""")
@@ -227,11 +227,11 @@ class FacturaTest(unittest.TestCase):
         insert into AFILIA values
         ('CBZ27326',3002,'paquete');
         
-        insert into CONSUME values(
-        DEFAULT, 'CBZ27326',1001,current_date,120);
+        insert into CONSUME values(DEFAULT,
+         'CBZ27326',1001,current_timestamp,120);
         
-        insert into CONSUME values(
-        DEFAULT, 'CBZ27326',1001,current_date-45,120);
+        insert into CONSUME values(DEFAULT,
+         'CBZ27326',1001,current_timestamp - interval '45 days',120);
         
         
         commit;""")
@@ -282,21 +282,21 @@ class FacturaTest(unittest.TestCase):
         insert into AFILIA values
         ('CBZ27326',3002,'paquete');
         
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1001,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1001,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1001,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1001,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1001,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1001,current_date,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1001,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1001,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1001,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1001,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1001,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1001,current_timestamp,20);
         
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1001,current_date-45,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1001,current_timestamp - interval '45 days',20);
         
         commit;""")
         
@@ -353,35 +353,35 @@ class FacturaTest(unittest.TestCase):
         insert into AFILIA values
         ('CBZ27326',3002,'paquete');
         
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1001,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1001,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1001,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1001,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1001,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1001,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1001,current_date-60,20000);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1001,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1001,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1001,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1001,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1001,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1001,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1001,current_timestamp - interval '60 days',20000);
         
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1002,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1002,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1002,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1002,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1002,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1002,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1001,current_date-60,20000);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1002,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1002,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1002,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1002,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1002,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1002,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1001,current_timestamp + interval '60 days',20000);
         
         commit;""")
         
@@ -451,50 +451,50 @@ class FacturaTest(unittest.TestCase):
         insert into CONTRATA values
         ('CBZ27326',4001);
         
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1001,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1001,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1001,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1001,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1001,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1001,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1001,current_date-60,20000);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1001,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1001,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1001,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1001,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1001,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1001,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1001,current_timestamp - interval '60 days',20000);
         
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1002,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1002,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1002,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1002,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1002,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1002,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1001,current_date-60,20000);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1002,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1002,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1002,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1002,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1002,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1002,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1001,current_timestamp - interval '45 days',20000);
         
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1003,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1003,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1003,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1003,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1003,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1003,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1003,current_date-60,20000);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1003,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1003,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1003,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1003,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1003,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1003,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1003,current_timestamp - interval '45 days',20000);
         
         commit;""")
         
@@ -564,50 +564,50 @@ class FacturaTest(unittest.TestCase):
         insert into CONTRATA values
         ('CBZ27326',4001);
         
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1001,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1001,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1001,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1001,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1001,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1001,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1001,current_date-60,20000);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1001,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1001,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1001,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1001,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1001,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1001,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1001,current_timestamp - interval '45 days',20000);
         
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1002,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1002,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1002,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1002,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1002,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1002,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1001,current_date-60,20000);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1002,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1002,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1002,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1002,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1002,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1002,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1001,current_timestamp - interval '45 days',20000);
         
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1003,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1003,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1003,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1003,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1003,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1003,current_date,20);
-        insert into CONSUME values(
-        DEFAULT,'CBZ27326',1003,current_date-60,20000);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1003,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1003,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1003,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1003,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1003,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1003,current_timestamp,20);
+        insert into CONSUME values(DEFAULT,
+        'CBZ27326',1003,current_timestamp - interval '45 days',20000);
         
         commit;""")
         

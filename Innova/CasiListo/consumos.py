@@ -51,7 +51,7 @@ class consumo:
     # Conexión con la base de datos
     self.conexiondb = database.operacion(
       'Operacion que inserta un consumo en la DB',
-      'insert into consume values (\'%s\',%s,\'%s\',%s);' 
+      'insert into consume values (DEFAULT,\'%s\',%s,\'%s\',%s);' 
       % (self.numserie,self.codservicio,self.fecha,self.cantidad),
       dbparams.dbname,dbparams.dbuser,dbparams.dbpass
       )
@@ -170,7 +170,7 @@ def consumosProducto():
     
     # Para cada tupla consumo, crea un consumo y agregalo a mi lista
     for i in result:
-        print consumo(numserie,i[2].strftime('%d/%m/%Y'),i[1],i[3])
+        print consumo(numserie,i[3].strftime('%d/%m/%Y'),i[2],i[4])
         
     if len(result) == 0:
         print "Este producto no posee ningun consumo."    
@@ -215,7 +215,7 @@ class facturacion:
     # Para cada tupla consumo, crea un consumo y agregalo a mi lista
     for i in result:
       self.listaConsumos.append(
-	consumo(self.numSerieProducto,i[2].strftime('%d/%m/%Y'),i[1],i[3])
+	consumo(self.numSerieProducto,i[3].strftime('%d/%m/%Y'),i[2],i[4])
       )
     self.conexiondb.cerrarConexion()
   
